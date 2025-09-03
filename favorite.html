@@ -6,6 +6,9 @@
         function SubmitText() {
             document.getElementById("demo").innerHTML = "Thank you for your answer!";
         }
+        function changeButtonText(elem) {
+            elem.innerHTML = "Submitted!";
+        }
     </script>
 </head>
 <body>
@@ -19,7 +22,7 @@
             <option value="prelude">1995 Honda Prelude</option>
         </select>
         <br><br>
-        <button type="button" onclick="SubmitText()">Submit</button>
+        <button type="button" onclick="SubmitText(); changeButtonText(this);">Submit</button>
     </form>
     <p id="demo"> </p>
 </body>
