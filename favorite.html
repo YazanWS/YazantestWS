@@ -2,6 +2,11 @@
 <html>
 <head>
     <title>Favorite Car Form</title>
+    <script>
+        function changeText() {
+            document.getElementById("demo").innerHTML = "Thank you for your answer!";
+        }
+    </script>
 </head>
 <body>
     <h1>Which car is your favorite?</h1>
@@ -12,13 +17,10 @@
             <option value="datsun">1983 Datsun 280ZX Turbo</option>
             <option value="mercedes">1995 Mercedes-Benz W140</option>
             <option value="prelude">1995 Honda Prelude</option>
-    </form>    
         </select>
         <br><br>
-        <button type="button" onclick="document.getElementById('demo').style.display='block'">Submit</button>
-   
-        <p id="demo" style="display:none">Thank you for your answer!</p>    
-    
- 
+        <button type="button" onclick="changeText()">Submit</button>
+    </form>
+    <p id="demo"> </p>
 </body>
 </html>
