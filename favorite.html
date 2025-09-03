@@ -9,18 +9,29 @@
         function changeButtonText(elem) {
             elem.innerHTML = "Submitted!";
         }
+        function showRequiredMsg() {
+            var select = document.getElementById("favoriteCar");
+            var msg = document.getElementById("requiredMsg");
+            if (select.value === "") {
+                msg.style.display = "inline";
+            } else {
+                msg.style.display = "none";
+            }
+        }
     </script>
 </head>
 <body>
     <h1>Which car is your favorite?</h1>
     <form>
         <label for="favoriteCar">Choose your favorite car:</label>
-        <select id="favoriteCar" name="favoriteCar" required>
+        <select id="favoriteCar" name="favoriteCar" required onblur="showRequiredMsg()">
+            <option value="" selected hidden>Select a car</option>
             <option value="celica">1986 Toyota Celica</option>
             <option value="datsun">1983 Datsun 280ZX Turbo</option>
             <option value="mercedes">1995 Mercedes-Benz W140</option>
             <option value="prelude">1995 Honda Prelude</option>
         </select>
+        <span id="requiredMsg" style="color:red; display:none;">This field is required</span>
         <br><br>
         <button type="button" onclick="SubmitText(); changeButtonText(this);">Submit</button>
     </form>
