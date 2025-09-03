@@ -2,6 +2,61 @@
 <html>
 <head>
     <title>Favorite Car Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #fceee3;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 500px;
+            margin: 40px auto;
+            background: #fff;
+            padding: 30px 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #d32f2f;
+            margin-bottom: 30px;
+        }
+        label {
+            font-weight: bold;
+        }
+        select, input[type="submit"], button {
+            font-size: 1em;
+            padding: 8px;
+            margin-top: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        #requiredMsg {
+            color: red;
+            margin-left: 10px;
+            font-size: 0.95em;
+        }
+        #demo {
+            margin-top: 20px;
+            color: #1976d2;
+            font-weight: bold;
+            text-align: center;
+        }
+        .nav {
+            margin-top: 30px;
+            text-align: center;
+        }
+        .nav a {
+            color: #d32f2f;
+            text-decoration: none;
+            margin: 0 10px;
+            font-weight: bold;
+        }
+        .nav a:hover {
+            text-decoration: underline;
+        }
+    </style>
     <script>
         function SubmitText() {
             document.getElementById("demo").innerHTML = "Thank you for your answer!";
@@ -18,23 +73,41 @@
                 msg.style.display = "none";
             }
         }
+        function handleSubmit(btn) {
+            var select = document.getElementById("favoriteCar");
+            var msg = document.getElementById("requiredMsg");
+            if (select.value === "") {
+                msg.style.display = "inline";
+                return false;
+            } else {
+                SubmitText();
+                changeButtonText(btn);
+                msg.style.display = "none";
+                return true;
+            }
+        }
     </script>
 </head>
 <body>
-    <h1>Which car is your favorite?</h1>
-    <form>
-        <label for="favoriteCar">Choose your favorite car:</label>
-        <select id="favoriteCar" name="favoriteCar" required onblur="showRequiredMsg()">
-            <option value="" selected hidden>Select a car</option>
-            <option value="celica">1986 Toyota Celica</option>
-            <option value="datsun">1983 Datsun 280ZX Turbo</option>
-            <option value="mercedes">1995 Mercedes-Benz W140</option>
-            <option value="prelude">1995 Honda Prelude</option>
-        </select>
-        <span id="requiredMsg" style="color:red; display:none;">This field is required</span>
-        <br><br>
-        <button type="button" onclick="SubmitText(); changeButtonText(this);">Submit</button>
-    </form>
-    <p id="demo"> </p>
+    <div class="container">
+        <h1>Which car is your favorite?</h1>
+        <form onsubmit="return false;">
+            <label for="favoriteCar">Choose your favorite car:</label>
+            <select id="favoriteCar" name="favoriteCar" required onblur="showRequiredMsg()">
+                <option value="" selected hidden>Select a car</option>
+                <option value="celica">1986 Toyota Celica</option>
+                <option value="datsun">1983 Datsun 280ZX Turbo</option>
+                <option value="mercedes">1995 Mercedes-Benz W140</option>
+                <option value="prelude">1995 Honda Prelude</option>
+            </select>
+            <span id="requiredMsg" style="display:none;">This field is required</span>
+            <br><br>
+            <button type="button" onclick="handleSubmit(this);">Submit</button>
+        </form>
+        <p id="demo"></p>
+        <div class="nav">
+            <p><a href="index.html">Back to main page</a> | <a href="pics.html">See pictures</a></p>
+        </div>
+    </div>
 </body>
 </html>

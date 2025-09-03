@@ -1,24 +1,73 @@
 <!DOCTYPE html>
 <html>
-    <head>
+<head>
+    <title>Pictures of the Cars</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #e3eafc;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            background: #fff;
+            padding: 30px 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        h2 {
+            margin-top: 30px;
+            color: #1976d2;
+        }
+        img {
+            display: block;
+            margin: 10px auto 30px auto;
+            border-radius: 8px;
+            box-shadow: 0 0 8px rgba(0,0,0,0.08);
+        }
+        .nav {
+            margin-top: 30px;
+            text-align: center;
+        }
+        .nav a {
+            color: #1976d2;
+            text-decoration: none;
+            margin: 0 10px;
+            font-weight: bold;
+        }
+        .nav a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
         <h1>Pictures of the cars I have owned:</h1>
-    </head>
-    
-    <body>
-        <h1>Currently owned cars:</h1>
-        <h2>1986 Toyota Celica</h2>
-            <img src="imgs/celica.jpg" alt="My Toyota Celica" width="450" height="600">
-        <h2>1983 Datsun 280ZX Turbo</h2>
-            <img src="imgs/celica and 280zx.jpg" alt="280ZX with celica" width="600" height="400">
-        <h2>1995 Mercedes-Benz W140</h2>
-            <h3>Picture coming soon!<h3>
-        
-        <h1>Previously owned cars:</h1>
-        <h2>1995 Honda Prelude<h2>
-        <img src="imgs/prelude.jpg" alt="My Honda Prelude" width="450" height="600">
-        <h2> More previous cars coming soon!</h2>
-        <p>To go back to the main page, click <a href="index.html">here</a></p> 
 
-        <p>To go chose a favorite, click <a href="favorite.html">here</a></p>
-    
-    </body>
+        <h2>Currently owned cars:</h2>
+        <h3>1986 Toyota Celica</h3>
+        <img src="imgs/celica.jpg" alt="My Toyota Celica" width="450" height="600">
+        <h3>1983 Datsun 280ZX Turbo</h3>
+        <img src="imgs/celica and 280zx.jpg" alt="280ZX with celica" width="600" height="400">
+        <h3>1995 Mercedes-Benz W140</h3>
+        <p><em>Picture coming soon!</em></p>
+
+        <h2>Previously owned cars:</h2>
+        <h3>1995 Honda Prelude</h3>
+        <img src="imgs/prelude.jpg" alt="My Honda Prelude" width="450" height="600">
+        <h3>More previous cars coming soon!</h3>
+
+        <div class="nav">
+            <p>To go back to the main page, click <a href="index.html">here</a></p>
+            <p>To choose a favorite, click <a href="favorite.html">here</a></p>
+        </div>
+    </div>
+</body>
+</html>
