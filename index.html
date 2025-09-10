@@ -22,20 +22,6 @@
             color: #333;
             margin-bottom: 30px;
         }
-        h2 {
-            margin-top: 30px;
-        }
-        ul {
-            margin: 0 0 20px 20px;
-        }
-        .car-title {
-            font-size: 1.3em;
-            font-weight: bold;
-        }
-        .blue { color: #1976d2; }
-        .brown { color: #8d5524; }
-        .grey { color: #555; }
-        .red { color: #d32f2f; }
         .nav {
             margin-top: 30px;
             text-align: center;
@@ -60,18 +46,16 @@
         }
     </style>
     <script>
+        async function getText(file) {
+            let myObject = await fetch(file);
+            let myText = await myObject.text();
+            myDisplay(myText);
+        }
+        function myDisplay(text) {
+            document.getElementById('carFactsOutput').innerText = text;
+        }
         window.onload = function() {
-            fetch('carfacts.txt')
-                .then(response => {
-                    if (!response.ok) throw new Error('Network response was not ok');
-                    return response.text();
-                })
-                .then(data => {
-                    document.getElementById('carFactsOutput').innerText = data;
-                })
-                .catch(error => {
-                    document.getElementById('carFactsOutput').innerText = "";
-                });
+            getText('carfacts.txt');
         }
     </script>
 </head>
