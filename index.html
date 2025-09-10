@@ -50,6 +50,18 @@
             text-decoration: underline;
         }
     </style>
+    <script>
+        function fetchCarFacts() {
+            fetch('carfacts.txt')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('carFactsOutput').innerText = data;
+                })
+                .catch(error => {
+                    document.getElementById('carFactsOutput').innerText = "Error loading car facts.";
+                });
+        }
+    </script>
 </head>
 <body>
     <div class="container">
@@ -87,6 +99,11 @@
         <ul>
             <li>TO BE CONTINUED...</li>
         </ul>
+
+        <div style="margin-top:40px; text-align:center;">
+            <button onclick="fetchCarFacts()">Show Car Facts</button>
+            <div id="carFactsOutput" style="margin-top:20px; background:#e3eafc; padding:15px; border-radius:8px; min-height:50px;"></div>
+        </div>
 
         <div class="nav">
             <p>To see pictures of the cars, click <a href="pics.html">here</a></p>
