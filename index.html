@@ -49,16 +49,28 @@
         .nav a:hover {
             text-decoration: underline;
         }
+        #carFactsOutput {
+            margin-top: 40px;
+            background: #e3eafc;
+            padding: 15px;
+            border-radius: 8px;
+            min-height: 50px;
+            white-space: pre-line;
+            font-size: 1.1em;
+        }
     </style>
     <script>
-        function fetchCarFacts() {
+        window.onload = function() {
             fetch('carfacts.txt')
-                .then(response => response.text())
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.text();
+                })
                 .then(data => {
                     document.getElementById('carFactsOutput').innerText = data;
                 })
                 .catch(error => {
-                    document.getElementById('carFactsOutput').innerText = "Error loading car facts.";
+                    document.getElementById('carFactsOutput').innerText = "";
                 });
         }
     </script>
@@ -66,45 +78,7 @@
 <body>
     <div class="container">
         <h1>My Collection of Cars</h1>
-
-        <h2 class="car-title blue">1986 Toyota Celica</h2>
-        <ul>
-            <li>Has a Gen2 3sgte engine swap</li>
-            <li>Has a 5 speed manual transmission from a Toyota Camry</li>
-            <li>Has a CT26 Turbo with front mount Intercooler</li>
-        </ul>
-        <h3 class="red">Things to do:</h3>
-        <ul>
-            <li>TO BE CONTINUED...</li>
-        </ul>
-
-        <h2 class="car-title brown">1983 Datsun 280ZX Turbo</h2>
-        <ul>
-            <li>Has the legendary L28ET engine</li>
-            <li>Comes in the rare option of a 5 speed manual transmission</li>
-            <li>Is a T-Top, in a 2+2, and comes in rare color code.</li>
-        </ul>
-        <h3 class="red">Things to do:</h3>
-        <ul>
-            <li>TO BE CONTINUED...</li>
-        </ul>
-
-        <h2 class="car-title grey">1995 Mercedes-Benz W140</h2>
-        <ul>
-            <li>Comes with the M104 3.3L I6 engine</li>
-            <li>Full leather interior</li>
-            <li>The peak of Mercedes engineering</li>
-        </ul>
-        <h3 class="red">Things to do:</h3>
-        <ul>
-            <li>TO BE CONTINUED...</li>
-        </ul>
-
-        <div style="margin-top:40px; text-align:center;">
-            <button onclick="fetchCarFacts()">Show Car Facts</button>
-            <div id="carFactsOutput" style="margin-top:20px; background:#e3eafc; padding:15px; border-radius:8px; min-height:50px;"></div>
-        </div>
-
+        <div id="carFactsOutput"></div>
         <div class="nav">
             <p>To see pictures of the cars, click <a href="pics.html">here</a></p>
             <p>To choose a favorite, click <a href="favorite.html">here</a></p>
