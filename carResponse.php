@@ -31,6 +31,10 @@
     <div class="response">
         <h1>Form Submission Results</h1>
         <?php
+            function sanitize($value) {
+                return htmlspecialchars(trim($value));
+            }
+
             $carNames = [
                 "celica" => "1986 Toyota Celica",
                 "datsun" => "1983 Datsun 280ZX Turbo",
@@ -39,18 +43,16 @@
             ];
 
             if ($_SERVER["REQUEST_METHOD"] === "POST") {
-                $selected = $_POST['favoriteCar'] ?? '';
-                if (array_key_exists($selected, $carNames)) {
-                    echo "<p>You selected: <strong>" . $carNames[$selected] . "</strong></p>";
-                } else {
-                    echo "<p>No car was selected.</p>";
-                }
+                $name = sanitize($_POST['name'] ?? '');
+                $carKey = sanitize($_POST['favoriteCar'] ?? '');
+                $car = $carNames[$carKey] ?? 'Unknown';
+
+                echo "<p>Hello, your name is: <strong>$name</strong>.</p>";
+                echo "<p>Your favorite car is: <strong>$car</strong>.</p>";
             } else {
                 echo "<p>Form was not submitted correctly.</p>";
             }
         ?>
-        <p><strong>GET:</strong> <?php var_dump($_GET); ?></p>
-        <p><strong>POST:</strong> <?php var_dump($_POST); ?></p>
     </div>
 </body>
 </html>
