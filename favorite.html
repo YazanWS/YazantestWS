@@ -25,7 +25,7 @@
         label {
             font-weight: bold;
         }
-        select, input[type="submit"], button {
+        select, input[type="submit"] {
             font-size: 1em;
             padding: 8px;
             margin-top: 10px;
@@ -36,12 +36,6 @@
             color: red;
             margin-left: 10px;
             font-size: 0.95em;
-        }
-        #demo {
-            margin-top: 20px;
-            color: #1976d2;
-            font-weight: bold;
-            text-align: center;
         }
         .nav {
             margin-top: 30px;
@@ -58,16 +52,6 @@
         }
     </style>
     <script>
-        function showRequiredMsg() {
-            var select = document.getElementById("favoriteCar");
-            var msg = document.getElementById("requiredMsg");
-            if (select.value === "") {
-                msg.style.display = "inline";
-            } else {
-                msg.style.display = "none";
-            }
-        }
-
         function validateForm() {
             var select = document.getElementById("favoriteCar");
             var msg = document.getElementById("requiredMsg");
@@ -75,6 +59,7 @@
                 msg.style.display = "inline";
                 return false;
             }
+            msg.style.display = "none";
             return true;
         }
     </script>
@@ -82,9 +67,9 @@
 <body>
     <div class="container">
         <h1>Which car is your favorite?</h1>
-        <form action="carResponse.php" method="get" onsubmit="return validateForm();">
+        <form action="carResponse.php" method="post" onsubmit="return validateForm();">
             <label for="favoriteCar">Choose your favorite car:</label>
-            <select id="favoriteCar" name="favoriteCar" required onblur="showRequiredMsg()">
+            <select id="favoriteCar" name="favoriteCar" required>
                 <option value="" selected hidden>Select a car</option>
                 <option value="celica">1986 Toyota Celica</option>
                 <option value="datsun">1983 Datsun 280ZX Turbo</option>
@@ -95,7 +80,6 @@
             <br><br>
             <input type="submit" value="Submit">
         </form>
-        <p id="demo"></p>
         <div class="nav">
             <p><a href="index.html">Back to main page</a> | <a href="pics.html">See pictures</a></p>
         </div>
