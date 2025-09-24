@@ -58,12 +58,6 @@
         }
     </style>
     <script>
-        function SubmitText() {
-            document.getElementById("demo").innerHTML = "Thank you for your answer!";
-        }
-        function changeButtonText(elem) {
-            elem.innerHTML = "Submitted!";
-        }
         function showRequiredMsg() {
             var select = document.getElementById("favoriteCar");
             var msg = document.getElementById("requiredMsg");
@@ -73,25 +67,22 @@
                 msg.style.display = "none";
             }
         }
-        function handleSubmit(btn) {
+
+        function validateForm() {
             var select = document.getElementById("favoriteCar");
             var msg = document.getElementById("requiredMsg");
             if (select.value === "") {
                 msg.style.display = "inline";
                 return false;
-            } else {
-                SubmitText();
-                changeButtonText(btn);
-                msg.style.display = "none";
-                return true;
             }
+            return true;
         }
     </script>
 </head>
 <body>
     <div class="container">
         <h1>Which car is your favorite?</h1>
-        <form onsubmit="return false;">
+        <form action="carResponse.php" method="get" onsubmit="return validateForm();">
             <label for="favoriteCar">Choose your favorite car:</label>
             <select id="favoriteCar" name="favoriteCar" required onblur="showRequiredMsg()">
                 <option value="" selected hidden>Select a car</option>
@@ -102,7 +93,7 @@
             </select>
             <span id="requiredMsg" style="display:none;">This field is required</span>
             <br><br>
-            <button type="button" onclick="handleSubmit(this);">Submit</button>
+            <input type="submit" value="Submit">
         </form>
         <p id="demo"></p>
         <div class="nav">
