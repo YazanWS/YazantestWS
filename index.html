@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>My Collection of Cars</title>
+    <title>Favorite Car Form</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: #f4f4f4;
+            background: #fceee3;
             margin: 0;
             padding: 0;
         }
         .container {
-            max-width: 800px;
-            margin: 30px auto;
+            max-width: 500px;
+            margin: 40px auto;
             background: #fff;
             padding: 30px 40px;
             border-radius: 10px;
@@ -19,15 +19,31 @@
         }
         h1 {
             text-align: center;
-            color: #333;
+            color: #d32f2f;
             margin-bottom: 30px;
+        }
+        label {
+            font-weight: bold;
+        }
+        select, input[type="submit"] {
+            font-size: 1em;
+            padding: 8px;
+            margin-top: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            width: 100%;
+        }
+        #requiredMsg {
+            color: red;
+            font-size: 0.95em;
+            display: none;
         }
         .nav {
             margin-top: 30px;
             text-align: center;
         }
         .nav a {
-            color: #1976d2;
+            color: #d32f2f;
             text-decoration: none;
             margin: 0 10px;
             font-weight: bold;
@@ -35,37 +51,38 @@
         .nav a:hover {
             text-decoration: underline;
         }
-        #carFactsOutput {
-            margin-top: 40px;
-            background: #e3eafc;
-            padding: 15px;
-            border-radius: 8px;
-            min-height: 50px;
-            white-space: pre-line;
-            font-size: 1.1em;
-        }
     </style>
     <script>
-        async function getText(file) {
-            let myObject = await fetch(file);
-            let myText = await myObject.text();
-            myDisplay(myText);
-        }
-        function myDisplay(text) {
-            document.getElementById('carFactsOutput').innerText = text;
-        }
-        window.onload = function() {
-            getText('carfacts.txt');
+        function validateForm() {
+            var select = document.getElementById("favoriteCar");
+            var msg = document.getElementById("requiredMsg");
+            if (select.value === "") {
+                msg.style.display = "inline";
+                return false;
+            }
+            msg.style.display = "none";
+            return true;
         }
     </script>
 </head>
 <body>
     <div class="container">
-        <h1>My Collection of Cars</h1>
-        <div id="carFactsOutput"></div>
+        <h1>Which car is your favorite?</h1>
+        <form action="carResponse.php" method="post" onsubmit="return validateForm();">
+            <label for="favoriteCar">Choose your favorite car:</label>
+            <select id="favoriteCar" name="favoriteCar">
+                <option value="" selected hidden>Select a car</option>
+                <option value="celica">1986 Toyota Celica</option>
+                <option value="datsun">1983 Datsun 280ZX Turbo</option>
+                <option value="mercedes">1995 Mercedes-Benz W140</option>
+                <option value="prelude">1995 Honda Prelude</option>
+            </select>
+            <span id="requiredMsg">This field is required</span>
+            <br><br>
+            <input type="submit" value="Submit">
+        </form>
         <div class="nav">
-            <p>To see pictures of the cars, click <a href="pics.html">here</a></p>
-            <p>To choose a favorite, click <a href="favorite.html">here</a></p>
+            <p><a href="index.html">Back to main page</a> | <a href="pics.html">See pictures</a></p>
         </div>
     </div>
 </body>
