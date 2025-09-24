@@ -2,6 +2,6 @@
 <html>
 <head><title>Server Info</title></head>
 <body>
-  <p><?= var_dump($_SERVER) ?></p>
+  <p>Your user agent is: <?= htmlspecialchars($_SERVER['HTTP_USER_AGENT']) ?></p>
 </body>
 </html>
