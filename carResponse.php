@@ -37,14 +37,20 @@
                 "mercedes" => "1995 Mercedes-Benz W140",
                 "prelude" => "1995 Honda Prelude"
             ];
-            if (isset($_POST['favoriteCar']) && array_key_exists($_POST['favoriteCar'], $carNames)) {
-                echo "<p>You selected: <strong>" . $carNames[$_POST['favoriteCar']] . "</strong></p>";
+
+            if ($_SERVER["REQUEST_METHOD"] === "POST") {
+                $selected = $_POST['favoriteCar'] ?? '';
+                if (array_key_exists($selected, $carNames)) {
+                    echo "<p>You selected: <strong>" . $carNames[$selected] . "</strong></p>";
+                } else {
+                    echo "<p>No car was selected.</p>";
+                }
             } else {
-                echo "<p>No car was selected.</p>";
+                echo "<p>Form was not submitted correctly.</p>";
             }
         ?>
-        <p><strong>GET:</strong> <?= var_dump($_GET) ?></p>
-        <p><strong>POST:</strong> <?= var_dump($_POST) ?></p>
+        <p><strong>GET:</strong> <?php var_dump($_GET); ?></p>
+        <p><strong>POST:</strong> <?php var_dump($_POST); ?></p>
     </div>
 </body>
 </html>
