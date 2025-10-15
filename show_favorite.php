@@ -4,7 +4,7 @@
     <title>Your Favorite Car</title>
 </head>
 <body>
-    <h2>Find your favorite car entry</h2>
+    <h2>Find your favorite car</h2>
     <form method="POST">
         <label for="name">Enter your name:</label>
         <input type="text" id="name" name="name" required>
