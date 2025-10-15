@@ -1,4 +1,3 @@
-<?php
 <!DOCTYPE html>
 <html>
 <head>
@@ -21,6 +20,7 @@
 
     $sql = "INSERT INTO favoriteauto (name, car) VALUES ('$name', '$favorite_car');";
     $result = mysqli_query($conn, $sql);
+
 ?>
 <body>
     <p>Thank you, <?= $name ?>! Your favorite car is <?= $favorite_car ?>.</p>
