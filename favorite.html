@@ -91,7 +91,7 @@
 <body>
     <div class="container">
         <h1>Which car is your favorite?</h1>
-        <form onsubmit="return false;">
+        <form action="submit_favorite.php" method="POST">
             <label for="favoriteCar">Choose your favorite car:</label>
             <select id="favoriteCar" name="favoriteCar" required onblur="showRequiredMsg()">
                 <option value="" selected hidden>Select a car</option>
@@ -102,7 +102,7 @@
             </select>
             <span id="requiredMsg" style="display:none;">This field is required</span>
             <br><br>
-            <button type="button" onclick="handleSubmit(this);">Submit</button>
+            <button type="submit">Submit</button>
         </form>
         <p id="demo"></p>
         <div class="nav">
