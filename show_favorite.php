@@ -25,7 +25,7 @@
             die("Connection failed: " . mysqli_connect_error());
         }
 
-        $sql = "SELECT car FROM favoriteauto WHERE name = '$name' ORDER BY id DESC LIMIT 1";
+        $sql = "SELECT car FROM favoriteauto WHERE name = '$name'";
         $result = mysqli_query($conn, $sql);
 
         if ($row = mysqli_fetch_assoc($result)) {
