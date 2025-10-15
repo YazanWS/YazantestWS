@@ -10,6 +10,13 @@
         <input type="text" id="name" name="name" required>
         <input type="submit" value="Show My Favorite Car">
     </form>
+    <div class="nav">
+        <p>
+            <a href="favorite.html">Back to form</a> |
+            <a href="pics.html">See pictures</a> |
+            <a href="show_favorite.php">See your favorite car</a>
+        </p>
+    </div>
     <?php
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $name = htmlspecialchars($_POST["name"]);
