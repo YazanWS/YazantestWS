@@ -5,8 +5,8 @@
 <?php
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   
-   $raw = /home/yazan/raspberry-pi-bme280/bme280;
-   echo "<pre>Raw: " . htmlspecialchars($raw) . "</pre>";
+   $raw = `/home/yazan/raspberry-pi-bme280/bme280`;
+   echo "<p>Raw: " . htmlspecialchars($raw) . "</p>";
    $data = json_decode($raw, true);
    if ($data) {
        echo "<p>Temperature: " . htmlspecialchars($data['temperature']) . " °C</p>";
