@@ -5,7 +5,7 @@
 <?php
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   
-   $raw = `/home/yazan/raspberry-pi-bme280/bme280`;
+   $raw = `./bme280`;
    echo "<p>Raw: " . htmlspecialchars($raw) . "</p>";
    $data = json_decode($raw, true);
    if ($data) {
