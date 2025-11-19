@@ -10,27 +10,20 @@
 <button type="submit" name="read" value="1">Read Sensor</button>
 </form>
 <?php
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
-    $raw = home/yazan/raspberry-pi-bme280/bme280;
-    echo "<pre>Raw JSON:\n" . htmlspecialchars($raw) . "</pre>";
-    $data = json_decode($raw, true);
-
-    if ($data) {
-
-        echo "<p>Temperature: " . htmlspecialchars($data['temperature']) . " °C</p>";
-        echo "<p>Pressure: " . htmlspecialchars($data['pressure']) . " Pa</p>";
-        echo "<p>Humidity: " . htmlspecialchars($data['humidity']) . " %</p>";
-        echo "<p>Altitude: " . htmlspecialchars($data['altitude']) . " m</p>";
-
-    } else {
-
-        echo "<p>Error: Could not parse JSON output.</p>";
-    }
+  
+   $raw = /home/yazan/raspberry-pi-bme280/bme280;
+   echo "<pre>Raw JSON:\n" . htmlspecialchars($raw) . "</pre>";
+   $data = json_decode($raw, true);
+   if ($data) {
+       echo "<p>Temperature: " . htmlspecialchars($data['temperature']) . " °C</p>";
+       echo "<p>Pressure: " . htmlspecialchars($data['pressure']) . " Pa</p>";
+       echo "<p>Humidity: " . htmlspecialchars($data['humidity']) . " %</p>";
+       echo "<p>Altitude: " . htmlspecialchars($data['altitude']) . " m</p>";
+   } else {
+       echo "<p>Error: Could not parse JSON.</p>";
+   }
 }
-
 ?>
 </body>
 </html>
- 
