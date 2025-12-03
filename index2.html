@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Live Weather</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #e3eafc;
+            text-align: center;
+            margin-top: 50px;
+        }
+        #weather {
+            font-size: 1.5em;
+            color: #1976d2;
+            margin-top: 20px;
+        }
+    </style>
+    <script>
+        async function fetchWeather() {
+            const city = "Montreal";
+            const apiKey = "4e3bed58cec94ac8a7e190832250312"; //API key from https://www.weatherapi.com/
+            try {
+                const response = await fetch(
+                    `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}&aqi=no`
+                );
+                const data = await response.json();
+                document.getElementById('weather').innerHTML =
+                    `<strong>${data.location.name}, ${data.location.country}</strong><br>
+                    Temperature: ${data.current.temp_c} °C<br>
+                    Condition: ${data.current.condition.text}<br>
+                    Humidity: ${data.current.humidity} %`;
+            } catch (e) {
+                document.getElementById('weather').innerText = "Error fetching weather.";
+            }
+        }
+        setInterval(fetchWeather, 10000); // Refresh every 10 seconds
+        window.onload = fetchWeather;
+    </script>
+</head>
+<body>
+    <h1>Live Weather</h1>
+    <div id="weather">Loading...</div>
+</body>
+</html>
