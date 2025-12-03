@@ -11,7 +11,7 @@
         }
         #weather {
             font-size: 1.5em;
-            color: #1976d2;
+            color: #ff7fea;
             margin-top: 20px;
         }
     </style>
@@ -33,7 +33,7 @@
                 document.getElementById('weather').innerText = "Error fetching weather.";
             }
         }
-        setInterval(fetchWeather, 10000); // Refresh every 10 seconds
+        setInterval(fetchWeather, 1000); // Refresh every 1 seconds
         window.onload = fetchWeather;
     </script>
 </head>
