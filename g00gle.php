@@ -6,6 +6,8 @@
         <h1>Google Search</h1>
         <form method="POST">
         <label for="search">Search Google or Type URL</label>
+        <input type="text" id="search" name="search" required>
+        <input type="submit" value="Search">
     </form>
       <script>
         <?php
