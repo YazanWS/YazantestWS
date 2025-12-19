@@ -12,7 +12,7 @@
             
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $search = htmlspecialchars($_POST["search"]);
-
+        }
         $server = "localhost";
         $username = "yazan";
         $password = "Mango3990";
