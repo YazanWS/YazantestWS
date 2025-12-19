@@ -7,7 +7,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $server = "localhost";
     $username = "yazan";
     $password = "Mango3990";
-    $database = "g00gle";
+    $database = "autodb";
     $conn = mysqli_connect($server, $username, $password, $database);
 
     if ($conn) {
