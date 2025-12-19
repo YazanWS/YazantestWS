@@ -11,7 +11,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $conn = mysqli_connect($server, $username, $password, $database);
 
     if ($conn) {
-        $sql = "INSERT INTO searchinfo (IP, search) VALUES ('$ip', '$search');";
+        $sql = "INSERT INTO g00gle (IP, search) VALUES ('$ip', '$search');";
         mysqli_query($conn, $sql);
         mysqli_close($conn);
     }
