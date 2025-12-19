@@ -3,7 +3,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $ip = $_SERVER["REMOTE_ADDR"];
     $search = htmlspecialchars($_POST["search"]);
 
-    // Database connection
     $server = "localhost";
     $username = "yazan";
     $password = "Mango3990";
@@ -16,8 +15,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         mysqli_close($conn);
     }
 
-    // Redirect to Google search
-    header("Location: https://www.google.com/search?q=" . urlencode($search));
-    exit();
+    if (!empty($_POST['search']) && !isset($_SERVER['HTTP_X_REQUESTED_WITH'])) {
+        header("Location: https://www.google.com/search?q=" . urlencode($search));
+        exit();
+    }
 }
 ?>
