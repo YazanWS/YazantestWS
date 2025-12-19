@@ -3,6 +3,7 @@
 <head>
     <title>Google</title>
     <body>
+        <h1>Google Search</h1>
         <form method="POST">
         <label for="search">Search Google or Type URL</label>
     </form>
@@ -23,7 +24,8 @@
         if (!$conn) {
             die("Connection failed: " . mysqli_connect_error());
         }
-         $sql = "INSERT INTO searchinfo (IP, search) VALUES ('$ip', '$search');";
-      </script> 
+         $sql = "INSERT INTO searchinfo (IP, search) VALUES ('$ip', '$search');"
+        ?>
+        </script> 
     </body>
 </html>
