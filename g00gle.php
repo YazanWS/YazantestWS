@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -29,11 +28,9 @@
 
         $sql = "INSERT INTO searchinfo (IP, search) VALUES ('$ip', '$search');";
         mysqli_query($conn, $sql);
-      
-        echo "<p>Your search is: <strong>" . $search . "</strong></p>";
-        echo "<p>Your IP address is: <strong>" . $ip . "</strong></p>";
-    
-        redirect: header("Location: https://www.google.com/search?q=" . urlencode($search));
+        mysqli_close($conn);
+        
+        header("Location: result.php?search=" . urlencode($search) . "&ip=" . urlencode($ip));
         exit();
     }
     ?>
