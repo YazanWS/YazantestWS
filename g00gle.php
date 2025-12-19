@@ -29,8 +29,8 @@
         $sql = "INSERT INTO searchinfo (IP, search) VALUES ('$ip', '$search');";
         mysqli_query($conn, $sql);
         mysqli_close($conn);
-        
-        header("Location: result.php?search=" . urlencode($search) . "&ip=" . urlencode($ip));
+
+        header("Location: redirect.php?search=" . urlencode($search) . "&ip=" . urlencode($ip));
         exit();
     }
     ?>
