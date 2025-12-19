@@ -22,7 +22,13 @@
         $database = "g00gle";
 
         $conn = mysqli_connect($server, $username, $password, $database);
-        
+        $result = mysqli_query($conn, $sql);
+
+        if($result){
+            echo "You have searched for $search from IP address $ip";
+        } else {
+            echo "Error: " . mysqli_error($conn);
+        }
         if (!$conn) {
             die("Connection failed: " . mysqli_connect_error());
         }
