@@ -1,33 +1,15 @@
 <?php
-$host = "localhost";
-$dbname = "sensor_dash";
-$user = "root";
-$pass = "Mango3990";
+$data = [
+    "speed"    => isset($_POST['speed']) ? floatval($_POST['speed']) : 0,
+    "tempC"    => isset($_POST['tempC']) ? floatval($_POST['tempC']) : 0,
+    "voltage"  => isset($_POST['voltage']) ? floatval($_POST['voltage']) : 0,
+    "crash"    => isset($_POST['crash']) ? intval($_POST['crash']) : 0,
+    "distance" => isset($_POST['distance']) ? floatval($_POST['distance']) : 0,
+    "light"    => isset($_POST['light']) ? intval($_POST['light']) : 0,
+    "updated_at" => date("Y-m-d H:i:s")
+];
 
-$conn = new mysqli($host, $user, $pass, $dbname);
+file_put_contents("latest.json", json_encode($data));
 
-if ($conn->connect_error) {
-    die("Connection failed");
-}
-
-$speed    = $_POST['speed'] ?? 0;
-$tempC    = $_POST['tempC'] ?? 0;
-$voltage  = $_POST['voltage'] ?? 0;
-$crash    = $_POST['crash'] ?? 0;
-$distance = $_POST['distance'] ?? 0;
-$light    = $_POST['light'] ?? 0;
-
-$stmt = $conn->prepare("INSERT INTO sensor_data (speed, tempC, voltage, crash, distance, light)
-                        VALUES (?, ?, ?, ?, ?, ?)");
-
-$stmt->bind_param("dddidi", $speed, $tempC, $voltage, $crash, $distance, $light);
-
-if ($stmt->execute()) {
-    echo "OK";
-} else {
-    echo "ERROR";
-}
-
-$stmt->close();
-$conn->close();
+echo "OK";
 ?>
