@@ -11,7 +11,10 @@ $data = [
     "updated_at" => date("Y-m-d H:i:s")
 ];
 
+
 file_put_contents("latest.json", json_encode($data));
+
+file_put_contents("session_log.jsonl", json_encode($data) . "\n", FILE_APPEND);
 
 echo "OK";
 ?>
