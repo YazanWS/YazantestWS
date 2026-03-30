@@ -1,4 +1,6 @@
 <?php
+date_default_timezone_set('America/Montreal');
+
 $data = [
     "speed"    => isset($_POST['speed']) ? floatval($_POST['speed']) : 0,
     "tempC"    => isset($_POST['tempC']) ? floatval($_POST['tempC']) : 0,
