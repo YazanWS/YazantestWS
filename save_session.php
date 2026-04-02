@@ -16,22 +16,23 @@ if ($conn->connect_error) die("DB connection failed: " . $conn->connect_error);
 
 $lines = file("session_log.jsonl", FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 
-$stmt = $conn->prepare("INSERT INTO sensor_data (speed, tempC, voltage, crash, distance, light)
-                        VALUES (?, ?, ?, ?, ?, ?)");
+$stmt = $conn->prepare("INSERT INTO sensor_data 
+(speed, tempC, voltage, crash, distance, light, lap_time)
+VALUES (?, ?, ?, ?, ?, ?, ?)");
 
 foreach ($lines as $line) {
     $data = json_decode($line, true);
 
     $stmt->bind_param(
-        "dddidi",
+        "dddidi d",
         $data['speed'],
         $data['tempC'],
         $data['voltage'],
         $data['crash'],
         $data['distance'],
-        $data['light']
+        $data['light'],
+        $data['lap_time']
     );
-
     $stmt->execute();
 }
 
