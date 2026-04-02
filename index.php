@@ -53,7 +53,7 @@
     <div class="container">
         <h1>Vehicle Telemetry Dashboard</h1>
         <p>Press start to view live speed, temperature, and voltage.</p>
-        <form action="dashboard.php" method="get">
+        <form action="start_session.php" method="post">
             <button class="btn" type="submit">Start</button>
         </form>
     </div>

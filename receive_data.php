@@ -1,16 +1,23 @@
 <?php
 date_default_timezone_set('America/Montreal');
 
-$data = [
-    "speed"    => isset($_POST['speed']) ? floatval($_POST['speed']) : 0,
-    "tempC"    => isset($_POST['tempC']) ? floatval($_POST['tempC']) : 0,
-    "voltage"  => isset($_POST['voltage']) ? floatval($_POST['voltage']) : 0,
-    "crash"    => isset($_POST['crash']) ? intval($_POST['crash']) : 0,
-    "distance" => isset($_POST['distance']) ? floatval($_POST['distance']) : 0,
-    "light"    => isset($_POST['light']) ? intval($_POST['light']) : 0,
-    "updated_at" => date("Y-m-d H:i:s")
-];
+$start = file_exists("session_start.txt") ? floatval(file_get_contents("session_start.txt")) : microtime(true);
 
+$now = microtime(true);
+
+$lap = $now - $start;
+
+$data = [
+    "speed"    => floatval($_POST['speed'] ?? 0),
+    "tempC"    => floatval($_POST['tempC'] ?? 0),
+    "voltage"  => floatval($_POST['voltage'] ?? 0),
+    "crash"    => intval($_POST['crash'] ?? 0),
+    "distance" => floatval($_POST['distance'] ?? 0),
+    "light"    => intval($_POST['light'] ?? 0),
+
+    
+    "lap_time" => round($lap, 3)
+];
 
 file_put_contents("latest.json", json_encode($data));
 
