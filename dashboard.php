@@ -1,192 +1,547 @@
-<?php
-$cameraStreamUrl = "http://192.168.137.8:81/stream"; // put your working stream URL here
+<?php 
+$cameraStreamUrl = "http://192.168.137.8:81/stream";
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Live Dashboard</title>
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Automotive / digital dashboard font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
     <style>
+        :root {
+            --bg-main: #06090f;
+            --bg-panel: rgba(16, 22, 34, 0.78);
+            --bg-card: rgba(20, 27, 40, 0.88);
+            --border: rgba(255, 255, 255, 0.08);
+            --text-main: #f8fafc;
+            --text-soft: #94a3b8;
+            --accent-blue: #00d4ff;
+            --accent-red: #ff3b3b;
+            --accent-green: #22c55e;
+            --accent-orange: #ff8a00;
+            --shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+            --glow: 0 0 18px rgba(0, 212, 255, 0.22);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             margin: 0;
-            font-family: Arial, sans-serif;
-            background: #0f172a;
-            color: white;
-            text-align: center;
+            min-height: 100vh;
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            background:
+                radial-gradient(circle at top center, rgba(0, 212, 255, 0.12), transparent 30%),
+                radial-gradient(circle at bottom right, rgba(255, 59, 59, 0.10), transparent 28%),
+                linear-gradient(160deg, #030507 0%, #08101c 45%, #04070d 100%);
+            overflow-x: hidden;
         }
 
-        h1 {
-            padding-top: 20px;
-            margin-bottom: 10px;
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background:
+                repeating-linear-gradient(
+                    90deg,
+                    rgba(255,255,255,0.02) 0px,
+                    rgba(255,255,255,0.02) 1px,
+                    transparent 1px,
+                    transparent 80px
+                ),
+                repeating-linear-gradient(
+                    0deg,
+                    rgba(255,255,255,0.015) 0px,
+                    rgba(255,255,255,0.015) 1px,
+                    transparent 1px,
+                    transparent 80px
+                );
+            pointer-events: none;
+            opacity: 0.35;
         }
 
-        .status {
-            margin-bottom: 20px;
-            color: #cbd5e1;
+        .page {
+            width: min(1450px, calc(100% - 40px));
+            margin: 0 auto;
+            padding: 28px 0 36px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .topbar {
+            background: rgba(10, 15, 24, 0.78);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 22px 28px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(14px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+        }
+
+        .title-block h1 {
+            margin: 0;
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(28px, 4vw, 40px);
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #ffffff;
+            text-shadow: 0 0 14px rgba(0, 212, 255, 0.20);
+        }
+
+        .title-block p {
+            margin: 8px 0 0;
+            color: var(--text-soft);
+            font-size: 14px;
+            letter-spacing: 0.5px;
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 18px;
+            border-radius: 999px;
+            background: rgba(0, 212, 255, 0.08);
+            border: 1px solid rgba(0, 212, 255, 0.18);
+            color: #dbeafe;
+            font-weight: 600;
+            box-shadow: var(--glow);
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--accent-blue);
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.9);
         }
 
         .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1.35fr 0.85fr;
+            gap: 24px;
+        }
+
+        .panel {
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 28px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(14px);
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .panel::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 24px;
+            right: 24px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.4), transparent);
+        }
+
+        .panel-title {
             display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            gap: 30px;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 12px;
             flex-wrap: wrap;
-            padding: 20px;
+        }
+
+        .panel-title h2 {
+            margin: 0;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 18px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .panel-title span {
+            color: var(--text-soft);
+            font-size: 13px;
         }
 
         .gauges {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            flex-wrap: wrap;
-        }
-
-        .gauge-card,
-        .camera-card {
-            background: #1e293b;
-            border-radius: 16px;
-            padding: 20px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
         }
 
         .gauge-card {
-            width: 280px;
+            background: linear-gradient(180deg, rgba(22, 30, 45, 0.95), rgba(12, 18, 29, 0.95));
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 24px;
+            padding: 20px 18px 18px;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 10px 24px rgba(0,0,0,0.30);
+            position: relative;
         }
 
-        .camera-card {
-            width: 380px;
+        .gauge-card::after {
+            content: "";
+            position: absolute;
+            inset: auto 18px 0 18px;
+            height: 3px;
+            border-radius: 999px;
+            background: linear-gradient(90deg, transparent, rgba(0,212,255,0.65), transparent);
+            opacity: 0.75;
+        }
+
+        .gauge-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .gauge-header h3 {
+            margin: 0;
+            font-size: 15px;
+            color: #e2e8f0;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .gauge-tag {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            padding: 6px 9px;
+            border-radius: 999px;
+            background: rgba(0,212,255,0.10);
+            color: #7dd3fc;
+            border: 1px solid rgba(0,212,255,0.18);
+        }
+
+        .canvas-wrap {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 6px;
         }
 
         canvas {
-            max-width: 240px;
+            max-width: 230px;
             margin: 0 auto;
         }
 
         .value {
-            font-size: 24px;
-            margin-top: 15px;
-            font-weight: bold;
+            margin-top: 10px;
+            text-align: center;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: #ffffff;
+            text-shadow: 0 0 10px rgba(255,255,255,0.05);
+        }
+
+        .unit-note {
+            margin-top: 6px;
+            text-align: center;
+            color: var(--text-soft);
+            font-size: 12px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .camera-card {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
         }
 
         .camera-wrapper {
-            width: 340px;
-            height: 240px;
-            margin: 0 auto;
-            background: #0b1220;
-            border-radius: 12px;
+            flex: 1;
+            min-height: 380px;
+            border-radius: 22px;
             overflow: hidden;
-            border: 1px solid #334155;
+            background:
+                linear-gradient(180deg, rgba(2, 6, 12, 0.92), rgba(10, 15, 26, 0.96));
+            border: 1px solid rgba(255,255,255,0.08);
             display: flex;
             align-items: center;
             justify-content: center;
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.02);
+            position: relative;
+        }
+
+        .camera-wrapper::before {
+            content: "LIVE FEED";
+            position: absolute;
+            top: 14px;
+            left: 14px;
+            z-index: 2;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1.4px;
+            color: #fff;
+            background: rgba(255, 59, 59, 0.14);
+            border: 1px solid rgba(255, 59, 59, 0.35);
+            padding: 8px 12px;
+            border-radius: 999px;
+            box-shadow: 0 0 12px rgba(255,59,59,0.22);
         }
 
         .camera-wrapper img {
-            width: 340px;
-            height: 240px;
+            width: 100%;
+            height: 100%;
             object-fit: cover;
             display: block;
         }
 
         .camera-note {
-            margin-top: 12px;
-            color: #cbd5e1;
+            margin-top: 14px;
+            color: var(--text-soft);
             font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .camera-note::before {
+            content: "";
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: var(--accent-green);
+            box-shadow: 0 0 10px rgba(34, 197, 94, 0.8);
         }
 
         .buttons {
-            margin: 30px 0 40px;
+            margin-top: 24px;
             display: flex;
             justify-content: center;
-            gap: 20px;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+
+        .buttons form {
+            margin: 0;
         }
 
         .btn {
-            border: none;
-            padding: 14px 24px;
-            font-size: 16px;
-            border-radius: 10px;
+            min-width: 200px;
+            border: 1px solid transparent;
+            padding: 15px 28px;
+            border-radius: 16px;
             cursor: pointer;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 1.4px;
+            text-transform: uppercase;
             color: white;
+            transition: all 0.25s ease;
+            box-shadow: 0 10px 24px rgba(0,0,0,0.35);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
         }
 
         .save {
-            background: #16a34a;
+            background: linear-gradient(135deg, #16a34a, #22c55e);
+            border-color: rgba(255,255,255,0.08);
         }
 
         .save:hover {
-            background: #15803d;
+            box-shadow: 0 0 18px rgba(34,197,94,0.30), 0 12px 26px rgba(0,0,0,0.32);
         }
 
         .stop {
-            background: #dc2626;
+            background: linear-gradient(135deg, #b91c1c, #ff3b3b);
+            border-color: rgba(255,255,255,0.08);
         }
 
         .stop:hover {
-            background: #b91c1c;
+            box-shadow: 0 0 18px rgba(255,59,59,0.28), 0 12px 26px rgba(0,0,0,0.32);
+        }
+
+        @media (max-width: 1180px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .camera-wrapper {
+                min-height: 320px;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .gauges {
+                grid-template-columns: 1fr;
+            }
+
+            .value {
+                font-size: 24px;
+            }
+
+            .page {
+                width: min(100% - 20px, 1450px);
+            }
+
+            .topbar,
+            .panel {
+                padding: 18px;
+                border-radius: 22px;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>Live Telemetry Dashboard</h1>
-    <div class="status" id="updatedAt">Waiting for data...</div>
-
-    <div class="dashboard-grid">
-        <div class="gauges">
-            <div class="gauge-card">
-                <h2>Speed</h2>
-                <canvas id="speedGauge"></canvas>
-                <div class="value" id="speedValue">0 km/h</div>
+    <div class="page">
+        <div class="topbar">
+            <div class="title-block">
+                <h1>Telemetry Dashboard</h1>
+                <p>Real-time vehicle data monitoring interface</p>
             </div>
 
-            <div class="gauge-card">
-                <h2>Temperature</h2>
-                <canvas id="tempGauge"></canvas>
-                <div class="value" id="tempValue">0 °C</div>
-            </div>
-
-            <div class="gauge-card">
-                <h2>Voltage</h2>
-                <canvas id="voltGauge"></canvas>
-                <div class="value" id="voltValue">0 V</div>
+            <div class="status-pill">
+                <span class="status-dot"></span>
+                <span id="updatedAt">Waiting for data...</span>
             </div>
         </div>
 
-        <div class="camera-card">
-            <h2>Live Camera</h2>
-            <div class="camera-wrapper">
-                <img id="cameraStream" src="<?= htmlspecialchars($cameraStreamUrl) ?>" alt="ESP Camera Stream">
+        <div class="dashboard-grid">
+            <div class="panel">
+                <div class="panel-title">
+                    <h2>Performance Gauges</h2>
+                    <span>Live sensor values</span>
+                </div>
+
+                <div class="gauges">
+                    <div class="gauge-card">
+                        <div class="gauge-header">
+                            <h3>Speed</h3>
+                            <div class="gauge-tag">Drive</div>
+                        </div>
+                        <div class="canvas-wrap">
+                            <canvas id="speedGauge"></canvas>
+                        </div>
+                        <div class="value" id="speedValue">0.0 km/h</div>
+                        <div class="unit-note">Vehicle speed</div>
+                    </div>
+
+                    <div class="gauge-card">
+                        <div class="gauge-header">
+                            <h3>Temperature</h3>
+                            <div class="gauge-tag">Engine</div>
+                        </div>
+                        <div class="canvas-wrap">
+                            <canvas id="tempGauge"></canvas>
+                        </div>
+                        <div class="value" id="tempValue">0.0 °C</div>
+                        <div class="unit-note">Thermal reading</div>
+                    </div>
+
+                    <div class="gauge-card">
+                        <div class="gauge-header">
+                            <h3>Voltage</h3>
+                            <div class="gauge-tag">Power</div>
+                        </div>
+                        <div class="canvas-wrap">
+                            <canvas id="voltGauge"></canvas>
+                        </div>
+                        <div class="value" id="voltValue">0.00 V</div>
+                        <div class="unit-note">Electrical system</div>
+                    </div>
+                </div>
             </div>
-            <div class="camera-note" id="cameraStatus">Connecting to camera...</div>
+
+            <div class="panel camera-card">
+                <div class="panel-title">
+                    <h2>Live Camera</h2>
+                    <span>ESP32 stream monitor</span>
+                </div>
+
+                <div class="camera-wrapper">
+                    <img id="cameraStream" src="<?= htmlspecialchars($cameraStreamUrl) ?>" alt="ESP Camera Stream">
+                </div>
+
+                <div class="camera-note" id="cameraStatus">Connecting to camera...</div>
+            </div>
         </div>
-    </div>
 
-    <div class="buttons">
-        <form action="save_session.php" method="post">
-            <button class="btn save" type="submit">Stop and Save</button>
-        </form>
+        <div class="buttons">
+            <form action="save_session.php" method="post">
+                <button class="btn save" type="submit">Stop and Save</button>
+            </form>
 
-        <form action="stop_session.php" method="post">
-            <button class="btn stop" type="submit">Stop</button>
-        </form>
+            <form action="stop_session.php" method="post">
+                <button class="btn stop" type="submit">Stop</button>
+            </form>
+        </div>
     </div>
 
     <script>
-        function createGauge(ctx, value, maxValue) {
+        function getGaugeColor(value, maxValue, type) {
+            const ratio = value / maxValue;
+
+            if (type === 'speed') {
+                if (ratio < 0.45) return '#00d4ff';
+                if (ratio < 0.75) return '#ff8a00';
+                return '#ff3b3b';
+            }
+
+            if (type === 'temp') {
+                if (ratio < 0.5) return '#22c55e';
+                if (ratio < 0.75) return '#ff8a00';
+                return '#ff3b3b';
+            }
+
+            if (type === 'volt') {
+                if (ratio < 0.45) return '#ff3b3b';
+                if (ratio < 0.7) return '#ff8a00';
+                return '#00d4ff';
+            }
+
+            return '#00d4ff';
+        }
+
+        function createGauge(ctx, value, maxValue, type) {
             return new Chart(ctx, {
                 type: 'doughnut',
                 data: {
                     datasets: [{
                         data: [value, Math.max(maxValue - value, 0)],
-                        backgroundColor: ['#3b82f6', '#334155'],
-                        borderWidth: 0
+                        backgroundColor: [getGaugeColor(value, maxValue, type), 'rgba(148, 163, 184, 0.18)'],
+                        borderWidth: 0,
+                        hoverOffset: 0
                     }]
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: true,
                     rotation: -90,
                     circumference: 180,
-                    cutout: '70%',
+                    cutout: '72%',
+                    animation: {
+                        duration: 300
+                    },
                     plugins: {
                         legend: { display: false },
                         tooltip: { enabled: false }
@@ -195,13 +550,17 @@ $cameraStreamUrl = "http://192.168.137.8:81/stream"; // put your working stream 
             });
         }
 
-        const speedChart = createGauge(document.getElementById('speedGauge'), 0, 45);
-        const tempChart  = createGauge(document.getElementById('tempGauge'), 0, 100);
-        const voltChart  = createGauge(document.getElementById('voltGauge'), 0, 15);
+        const speedChart = createGauge(document.getElementById('speedGauge'), 0, 45, 'speed');
+        const tempChart  = createGauge(document.getElementById('tempGauge'), 0, 100, 'temp');
+        const voltChart  = createGauge(document.getElementById('voltGauge'), 0, 15, 'volt');
 
-        function updateGauge(chart, value, max) {
+        function updateGauge(chart, value, max, type) {
             const safeValue = Math.max(0, Math.min(value, max));
             chart.data.datasets[0].data = [safeValue, max - safeValue];
+            chart.data.datasets[0].backgroundColor = [
+                getGaugeColor(safeValue, max, type),
+                'rgba(148, 163, 184, 0.18)'
+            ];
             chart.update();
         }
 
@@ -210,13 +569,17 @@ $cameraStreamUrl = "http://192.168.137.8:81/stream"; // put your working stream 
                 const response = await fetch('latest_data.php?_=' + new Date().getTime());
                 const data = await response.json();
 
-                updateGauge(speedChart, parseFloat(data.speed || 0), 45);
-                updateGauge(tempChart, parseFloat(data.tempC || 0), 100);
-                updateGauge(voltChart, parseFloat(data.voltage || 0), 15);
+                const speed = parseFloat(data.speed || 0);
+                const temp = parseFloat(data.tempC || 0);
+                const volt = parseFloat(data.voltage || 0);
 
-                document.getElementById('speedValue').textContent = `${parseFloat(data.speed || 0).toFixed(1)} km/h`;
-                document.getElementById('tempValue').textContent  = `${parseFloat(data.tempC || 0).toFixed(1)} °C`;
-                document.getElementById('voltValue').textContent  = `${parseFloat(data.voltage || 0).toFixed(2)} V`;
+                updateGauge(speedChart, speed, 45, 'speed');
+                updateGauge(tempChart, temp, 100, 'temp');
+                updateGauge(voltChart, volt, 15, 'volt');
+
+                document.getElementById('speedValue').textContent = `${speed.toFixed(1)} km/h`;
+                document.getElementById('tempValue').textContent  = `${temp.toFixed(1)} °C`;
+                document.getElementById('voltValue').textContent  = `${volt.toFixed(2)} V`;
 
                 document.getElementById('updatedAt').textContent =
                     data.updated_at ? `Last update: ${data.updated_at}` : 'Waiting for data...';
@@ -234,6 +597,7 @@ $cameraStreamUrl = "http://192.168.137.8:81/stream"; // put your working stream 
 
         cam.onerror = function() {
             cameraStatus.textContent = 'Camera stream unavailable';
+            cameraStatus.style.color = '#fca5a5';
         };
 
         fetchData();
