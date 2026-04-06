@@ -110,25 +110,90 @@ $cameraStreamUrl = "http://192.168.137.8:81/stream";
             letter-spacing: 0.5px;
         }
 
-        .status-pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            padding: 12px 18px;
-            border-radius: 999px;
-            background: rgba(255, 45, 45, 0.10);
-            border: 1px solid rgba(255, 45, 45, 0.25);
-            color: #ffffff;
-            font-weight: 600;
-            box-shadow: var(--glow);
+        .topbar-right {
+            position: relative;
         }
 
-        .status-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: var(--accent-red);
-            box-shadow: 0 0 10px rgba(255, 45, 45, 0.9);
+        .menu-toggle {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 45, 45, 0.25);
+            background: rgba(255, 45, 45, 0.10);
+            box-shadow: var(--glow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        .menu-toggle:hover {
+            transform: translateY(-1px);
+            background: rgba(255, 45, 45, 0.14);
+        }
+
+        .burger {
+            width: 22px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .burger span {
+            display: block;
+            height: 2.5px;
+            width: 100%;
+            border-radius: 999px;
+            background: #ffffff;
+        }
+
+        .menu-dropdown {
+            position: absolute;
+            top: 70px;
+            right: 0;
+            width: 260px;
+            background: rgba(20, 20, 23, 0.96);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 18px;
+            box-shadow: 0 16px 40px rgba(0,0,0,0.45);
+            backdrop-filter: blur(14px);
+            padding: 12px;
+            display: none;
+            z-index: 20;
+        }
+
+        .menu-dropdown.show {
+            display: block;
+        }
+
+        .menu-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 12px;
+            letter-spacing: 1.4px;
+            text-transform: uppercase;
+            color: var(--text-soft);
+            padding: 8px 10px 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            margin-bottom: 8px;
+        }
+
+        .menu-item {
+            display: block;
+            width: 100%;
+            text-decoration: none;
+            color: #ffffff;
+            background: linear-gradient(180deg, rgba(34, 34, 37, 0.96), rgba(16, 16, 18, 0.96));
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 14px;
+            padding: 14px 14px;
+            font-weight: 600;
+            transition: 0.2s ease;
+        }
+
+        .menu-item:hover {
+            border-color: rgba(255, 45, 45, 0.28);
+            box-shadow: 0 0 16px rgba(255,45,45,0.18);
         }
 
         .dashboard-grid {
@@ -178,6 +243,40 @@ $cameraStreamUrl = "http://192.168.137.8:81/stream";
         .panel-title span {
             color: var(--text-soft);
             font-size: 13px;
+        }
+
+        .panel-title-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            border-radius: 999px;
+            background: rgba(255, 45, 45, 0.10);
+            border: 1px solid rgba(255, 45, 45, 0.25);
+            color: #ffffff;
+            font-weight: 600;
+            box-shadow: var(--glow);
+            max-width: 100%;
+        }
+
+        .status-pill-text {
+            white-space: nowrap;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--accent-red);
+            box-shadow: 0 0 10px rgba(255, 45, 45, 0.9);
+            flex-shrink: 0;
         }
 
         .gauges {
@@ -407,6 +506,25 @@ $cameraStreamUrl = "http://192.168.137.8:81/stream";
                 padding: 18px;
                 border-radius: 22px;
             }
+
+            .menu-dropdown {
+                width: 220px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .panel-title {
+                align-items: flex-start;
+            }
+
+            .panel-title-right {
+                width: 100%;
+                justify-content: flex-start;
+            }
+
+            .status-pill-text {
+                white-space: normal;
+            }
         }
     </style>
 </head>
@@ -418,9 +536,19 @@ $cameraStreamUrl = "http://192.168.137.8:81/stream";
                 <p>Real-time data monitoring interface</p>
             </div>
 
-            <div class="status-pill">
-                <span class="status-dot"></span>
-                <span id="updatedAt">Waiting for data...</span>
+            <div class="topbar-right">
+                <button class="menu-toggle" id="menuToggle" type="button" aria-label="Open menu">
+                    <div class="burger">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </button>
+
+                <div class="menu-dropdown" id="menuDropdown">
+                    <div class="menu-title">Menu</div>
+                    <a class="menu-item" href="previous_laps.php">Previous Recorded Laps</a>
+                </div>
             </div>
         </div>
 
@@ -428,7 +556,14 @@ $cameraStreamUrl = "http://192.168.137.8:81/stream";
             <div class="panel">
                 <div class="panel-title">
                     <h2>Performance Gauges</h2>
-                    <span>Live sensor values</span>
+
+                    <div class="panel-title-right">
+                        <span>Live sensor values</span>
+                        <div class="status-pill">
+                            <span class="status-dot"></span>
+                            <span class="status-pill-text" id="updatedAt">Waiting for data...</span>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="gauges">
@@ -582,6 +717,20 @@ $cameraStreamUrl = "http://192.168.137.8:81/stream";
             cameraStatus.textContent = 'Camera stream unavailable';
             cameraStatus.style.color = '#fca5a5';
         };
+
+        const menuToggle = document.getElementById('menuToggle');
+        const menuDropdown = document.getElementById('menuDropdown');
+
+        menuToggle.addEventListener('click', function (e) {
+            e.stopPropagation();
+            menuDropdown.classList.toggle('show');
+        });
+
+        document.addEventListener('click', function (e) {
+            if (!menuDropdown.contains(e.target) && !menuToggle.contains(e.target)) {
+                menuDropdown.classList.remove('show');
+            }
+        });
 
         fetchData();
         setInterval(fetchData, 500);
