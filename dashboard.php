@@ -1,3 +1,6 @@
+<?php
+$cameraStreamUrl = "http://192.168.137.8"; // change this to your ESP-WROVER-CAM IP
+?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -22,20 +25,37 @@
             color: #cbd5e1;
         }
 
-        .gauges {
+        .dashboard-grid {
             display: flex;
             justify-content: center;
+            align-items: flex-start;
             gap: 30px;
             flex-wrap: wrap;
             padding: 20px;
         }
 
-        .gauge-card {
+        .gauges {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .gauge-card,
+        .camera-card {
             background: #1e293b;
             border-radius: 16px;
             padding: 20px;
-            width: 280px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+        }
+
+        .gauge-card {
+            width: 280px;
+        }
+
+        .camera-card {
+            width: 640px;
+            max-width: 95vw;
         }
 
         canvas {
@@ -47,6 +67,31 @@
             font-size: 24px;
             margin-top: 15px;
             font-weight: bold;
+        }
+
+        .camera-wrapper {
+            width: 100%;
+            aspect-ratio: 4 / 3;
+            background: #0b1220;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #334155;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .camera-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .camera-note {
+            margin-top: 12px;
+            color: #cbd5e1;
+            font-size: 14px;
         }
 
         .buttons {
@@ -86,23 +131,37 @@
     <h1>Live Telemetry Dashboard</h1>
     <div class="status" id="updatedAt">Waiting for data...</div>
 
-    <div class="gauges">
-        <div class="gauge-card">
-            <h2>Speed</h2>
-            <canvas id="speedGauge"></canvas>
-            <div class="value" id="speedValue">0 km/h</div>
+    <div class="dashboard-grid">
+        <div class="gauges">
+            <div class="gauge-card">
+                <h2>Speed</h2>
+                <canvas id="speedGauge"></canvas>
+                <div class="value" id="speedValue">0 km/h</div>
+            </div>
+
+            <div class="gauge-card">
+                <h2>Temperature</h2>
+                <canvas id="tempGauge"></canvas>
+                <div class="value" id="tempValue">0 °C</div>
+            </div>
+
+            <div class="gauge-card">
+                <h2>Voltage</h2>
+                <canvas id="voltGauge"></canvas>
+                <div class="value" id="voltValue">0 V</div>
+            </div>
         </div>
 
-        <div class="gauge-card">
-            <h2>Temperature</h2>
-            <canvas id="tempGauge"></canvas>
-            <div class="value" id="tempValue">0 °C</div>
-        </div>
-
-        <div class="gauge-card">
-            <h2>Voltage</h2>
-            <canvas id="voltGauge"></canvas>
-            <div class="value" id="voltValue">0 V</div>
+        <div class="camera-card">
+            <h2>Live Camera</h2>
+            <div class="camera-wrapper">
+                <img
+                    id="cameraStream"
+                    src="<?= htmlspecialchars($cameraStreamUrl) ?>"
+                    alt="ESP-WROVER-CAM Stream"
+                >
+            </div>
+            <div class="camera-note" id="cameraStatus">Camera stream loading...</div>
         </div>
     </div>
 
@@ -169,6 +228,17 @@
                 document.getElementById('updatedAt').textContent = 'Error reading live data';
             }
         }
+
+        const cam = document.getElementById('cameraStream');
+        const cameraStatus = document.getElementById('cameraStatus');
+
+        cam.onload = () => {
+            cameraStatus.textContent = 'Camera stream connected';
+        };
+
+        cam.onerror = () => {
+            cameraStatus.textContent = 'Camera stream unavailable';
+        };
 
         fetchData();
         setInterval(fetchData, 500);
