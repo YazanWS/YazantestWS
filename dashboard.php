@@ -1,5 +1,5 @@
 <?php
-$cameraBaseUrl = "http://192.168.137.8"; // change to your ESP-WROVER-CAM IP
+$cameraStreamUrl = "http://192.168.137.8:81/stream"; // change this to the exact working camera stream URL
 ?>
 <!DOCTYPE html>
 <html>
@@ -155,9 +155,9 @@ $cameraBaseUrl = "http://192.168.137.8"; // change to your ESP-WROVER-CAM IP
         <div class="camera-card">
             <h2>Live Camera</h2>
             <div class="camera-wrapper">
-                <img id="cameraStream" src="" alt="ESP Camera Stream">
+                <img id="cameraStream" src="<?= htmlspecialchars($cameraStreamUrl) ?>" alt="ESP Camera Stream">
             </div>
-            <div class="camera-note" id="cameraStatus">Initializing camera...</div>
+            <div class="camera-note" id="cameraStatus">Connecting to camera...</div>
         </div>
     </div>
 
@@ -172,10 +172,6 @@ $cameraBaseUrl = "http://192.168.137.8"; // change to your ESP-WROVER-CAM IP
     </div>
 
     <script>
-        const CAMERA_BASE = "<?= htmlspecialchars($cameraBaseUrl) ?>";
-        const cameraStatus = document.getElementById('cameraStatus');
-        const cameraStream = document.getElementById('cameraStream');
-
         function createGauge(ctx, value, maxValue, label) {
             return new Chart(ctx, {
                 type: 'doughnut',
@@ -229,41 +225,19 @@ $cameraBaseUrl = "http://192.168.137.8"; // change to your ESP-WROVER-CAM IP
             }
         }
 
-        async function initCamera() {
-            cameraStatus.textContent = 'Setting camera format...';
+        const cam = document.getElementById('cameraStream');
+        const cameraStatus = document.getElementById('cameraStatus');
 
-            try {
-                // QVGA = 320x240 on many ESP32 camera builds
-                await fetch(CAMERA_BASE + '/control?var=framesize&val=5', { mode: 'no-cors' });
-            } catch (e) {}
+        cam.onload = function() {
+            cameraStatus.textContent = 'Camera connected';
+        };
 
-            try {
-                await fetch(CAMERA_BASE + '/control?var=quality&val=12', { mode: 'no-cors' });
-            } catch (e) {}
-
-            setTimeout(() => {
-                cameraStatus.textContent = 'Starting live stream...';
-
-                // Try common stream endpoint
-                cameraStream.src = CAMERA_BASE + ':81/stream';
-
-                cameraStream.onerror = function() {
-                    cameraStatus.textContent = 'Trying alternate stream endpoint...';
-                    cameraStream.onerror = function() {
-                        cameraStatus.textContent = 'Camera stream unavailable';
-                    };
-                    cameraStream.src = CAMERA_BASE + '/stream';
-                };
-
-                cameraStream.onload = function() {
-                    cameraStatus.textContent = 'Camera stream connected';
-                };
-            }, 1000);
-        }
+        cam.onerror = function() {
+            cameraStatus.textContent = 'Camera stream unavailable';
+        };
 
         fetchData();
         setInterval(fetchData, 500);
-        initCamera();
     </script>
 </body>
 </html>
