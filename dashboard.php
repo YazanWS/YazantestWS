@@ -414,8 +414,8 @@ $cameraStreamUrl = "http://192.168.137.8:81/stream";
     <div class="page">
         <div class="topbar">
             <div class="title-block">
-                <h1>Telemetry Dashboard</h1>
-                <p>Real-time vehicle data monitoring interface</p>
+                <h1>Dashboard</h1>
+                <p>Real-time data monitoring interface</p>
             </div>
 
             <div class="status-pill">
