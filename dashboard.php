@@ -1,5 +1,5 @@
 <?php
-$cameraStreamUrl = "http://192.168.137.8:81/stream"; // change this to the exact working camera stream URL
+$cameraStreamUrl = "http://192.168.137.8:81/stream"; // put your working stream URL here
 ?>
 <!DOCTYPE html>
 <html>
@@ -172,7 +172,7 @@ $cameraStreamUrl = "http://192.168.137.8:81/stream"; // change this to the exact
     </div>
 
     <script>
-        function createGauge(ctx, value, maxValue, label) {
+        function createGauge(ctx, value, maxValue) {
             return new Chart(ctx, {
                 type: 'doughnut',
                 data: {
@@ -195,9 +195,9 @@ $cameraStreamUrl = "http://192.168.137.8:81/stream"; // change this to the exact
             });
         }
 
-        const speedChart = createGauge(document.getElementById('speedGauge'), 0, 45, 'Speed');
-        const tempChart  = createGauge(document.getElementById('tempGauge'), 0, 100, 'Temp');
-        const voltChart  = createGauge(document.getElementById('voltGauge'), 0, 15, 'Voltage');
+        const speedChart = createGauge(document.getElementById('speedGauge'), 0, 45);
+        const tempChart  = createGauge(document.getElementById('tempGauge'), 0, 100);
+        const voltChart  = createGauge(document.getElementById('voltGauge'), 0, 15);
 
         function updateGauge(chart, value, max) {
             const safeValue = Math.max(0, Math.min(value, max));
