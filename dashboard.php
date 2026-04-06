@@ -90,6 +90,8 @@ $cameraStreamUrl = "http://192.168.137.8:81/stream";
             gap: 20px;
             flex-wrap: wrap;
             margin-bottom: 24px;
+            position: relative;
+            z-index: 50;
         }
 
         .title-block h1 {
@@ -112,7 +114,8 @@ $cameraStreamUrl = "http://192.168.137.8:81/stream";
 
         .topbar-right {
             position: relative;
-        }
+            z-index: 60;
+}
 
         .menu-toggle {
             width: 56px;
@@ -160,9 +163,9 @@ $cameraStreamUrl = "http://192.168.137.8:81/stream";
             backdrop-filter: blur(14px);
             padding: 12px;
             display: none;
-            z-index: 20;
+            z-index: 9999;
         }
-
+        
         .menu-dropdown.show {
             display: block;
         }
