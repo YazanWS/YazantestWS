@@ -1,5 +1,5 @@
 <?php
-$cameraStreamUrl = "http://192.168.137.8"; // change this to your ESP-WROVER-CAM IP
+$cameraBaseUrl = "http://192.168.137.8"; // change to your ESP-WROVER-CAM IP
 ?>
 <!DOCTYPE html>
 <html>
@@ -54,8 +54,7 @@ $cameraStreamUrl = "http://192.168.137.8"; // change this to your ESP-WROVER-CAM
         }
 
         .camera-card {
-            width: 640px;
-            max-width: 95vw;
+            width: 380px;
         }
 
         canvas {
@@ -70,8 +69,9 @@ $cameraStreamUrl = "http://192.168.137.8"; // change this to your ESP-WROVER-CAM
         }
 
         .camera-wrapper {
-            width: 100%;
-            aspect-ratio: 4 / 3;
+            width: 340px;
+            height: 240px;
+            margin: 0 auto;
             background: #0b1220;
             border-radius: 12px;
             overflow: hidden;
@@ -82,8 +82,8 @@ $cameraStreamUrl = "http://192.168.137.8"; // change this to your ESP-WROVER-CAM
         }
 
         .camera-wrapper img {
-            width: 100%;
-            height: 100%;
+            width: 340px;
+            height: 240px;
             object-fit: cover;
             display: block;
         }
@@ -155,13 +155,9 @@ $cameraStreamUrl = "http://192.168.137.8"; // change this to your ESP-WROVER-CAM
         <div class="camera-card">
             <h2>Live Camera</h2>
             <div class="camera-wrapper">
-                <img
-                    id="cameraStream"
-                    src="<?= htmlspecialchars($cameraStreamUrl) ?>"
-                    alt="ESP-WROVER-CAM Stream"
-                >
+                <img id="cameraStream" src="" alt="ESP Camera Stream">
             </div>
-            <div class="camera-note" id="cameraStatus">Camera stream loading...</div>
+            <div class="camera-note" id="cameraStatus">Initializing camera...</div>
         </div>
     </div>
 
@@ -176,6 +172,10 @@ $cameraStreamUrl = "http://192.168.137.8"; // change this to your ESP-WROVER-CAM
     </div>
 
     <script>
+        const CAMERA_BASE = "<?= htmlspecialchars($cameraBaseUrl) ?>";
+        const cameraStatus = document.getElementById('cameraStatus');
+        const cameraStream = document.getElementById('cameraStream');
+
         function createGauge(ctx, value, maxValue, label) {
             return new Chart(ctx, {
                 type: 'doughnut',
@@ -229,19 +229,41 @@ $cameraStreamUrl = "http://192.168.137.8"; // change this to your ESP-WROVER-CAM
             }
         }
 
-        const cam = document.getElementById('cameraStream');
-        const cameraStatus = document.getElementById('cameraStatus');
+        async function initCamera() {
+            cameraStatus.textContent = 'Setting camera format...';
 
-        cam.onload = () => {
-            cameraStatus.textContent = 'Camera stream connected';
-        };
+            try {
+                // QVGA = 320x240 on many ESP32 camera builds
+                await fetch(CAMERA_BASE + '/control?var=framesize&val=5', { mode: 'no-cors' });
+            } catch (e) {}
 
-        cam.onerror = () => {
-            cameraStatus.textContent = 'Camera stream unavailable';
-        };
+            try {
+                await fetch(CAMERA_BASE + '/control?var=quality&val=12', { mode: 'no-cors' });
+            } catch (e) {}
+
+            setTimeout(() => {
+                cameraStatus.textContent = 'Starting live stream...';
+
+                // Try common stream endpoint
+                cameraStream.src = CAMERA_BASE + ':81/stream';
+
+                cameraStream.onerror = function() {
+                    cameraStatus.textContent = 'Trying alternate stream endpoint...';
+                    cameraStream.onerror = function() {
+                        cameraStatus.textContent = 'Camera stream unavailable';
+                    };
+                    cameraStream.src = CAMERA_BASE + '/stream';
+                };
+
+                cameraStream.onload = function() {
+                    cameraStatus.textContent = 'Camera stream connected';
+                };
+            }, 1000);
+        }
 
         fetchData();
         setInterval(fetchData, 500);
+        initCamera();
     </script>
 </body>
 </html>
