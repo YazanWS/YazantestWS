@@ -4,284 +4,587 @@ $cameraStreamUrl = "http://192.168.137.8:81/stream";
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Live Dashboard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Dashboard</title>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
-<style>
-:root {
-    --bg-main: #0b0b0d;
-    --bg-panel: rgba(30, 30, 32, 0.9);
-    --bg-card: rgba(40, 40, 42, 0.9);
-    --border: rgba(255,255,255,0.08);
-    --text-main: #ffffff;
-    --text-soft: #a1a1aa;
-
-    --red: #ff2d2d;
-    --red-soft: rgba(255,45,45,0.15);
-    --green: #22c55e;
-    --orange: #ff8a00;
-
-    --shadow: 0 12px 40px rgba(0,0,0,0.6);
-    --glow: 0 0 18px rgba(255,45,45,0.35);
-}
-
-body {
-    margin:0;
-    font-family:'Inter', sans-serif;
-    color:var(--text-main);
-    background:
-        radial-gradient(circle at top, rgba(255,45,45,0.12), transparent 30%),
-        linear-gradient(160deg, #050505, #0f0f12 50%, #050505);
-}
-
-/* HEADER */
-.topbar {
-    margin:20px;
-    padding:20px 25px;
-    border-radius:20px;
-    background:var(--bg-panel);
-    border:1px solid var(--border);
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-}
-
-h1 {
-    font-family:'Orbitron';
-    letter-spacing:2px;
-    margin:0;
-}
-
-.status {
-    padding:10px 18px;
-    border-radius:999px;
-    background:var(--red-soft);
-    border:1px solid rgba(255,45,45,0.4);
-    box-shadow:var(--glow);
-}
-
-/* GRID */
-.dashboard {
-    display:grid;
-    grid-template-columns: 2fr 1fr;
-    gap:20px;
-    padding:20px;
-}
-
-.panel {
-    background:var(--bg-panel);
-    border-radius:20px;
-    padding:20px;
-    border:1px solid var(--border);
-}
-
-/* GAUGES */
-.gauges {
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:15px;
-}
-
-.gauge {
-    background:var(--bg-card);
-    padding:15px;
-    border-radius:18px;
-    text-align:center;
-}
-
-.gauge h3 {
-    font-size:14px;
-    margin-bottom:5px;
-    color:#ddd;
-}
-
-.value {
-    font-family:'Orbitron';
-    font-size:26px;
-    margin-top:10px;
-}
-
-/* CAMERA */
-.camera {
-    display:flex;
-    flex-direction:column;
-}
-
-.camera-box {
-    flex:1;
-    background:#000;
-    border-radius:15px;
-    overflow:hidden;
-    border:1px solid var(--border);
-}
-
-.camera-box img {
-    width:100%;
-    height:100%;
-    object-fit:cover;
-}
-
-.camera-status {
-    margin-top:10px;
-    color:var(--text-soft);
-}
-
-/* BUTTONS */
-.buttons {
-    text-align:center;
-    margin:20px;
-}
-
-button {
-    padding:14px 25px;
-    margin:10px;
-    border:none;
-    border-radius:12px;
-    font-family:'Orbitron';
-    letter-spacing:1px;
-    cursor:pointer;
-}
-
-.save {
-    background:#16a34a;
-}
-
-.stop {
-    background:var(--red);
-    box-shadow:0 0 15px rgba(255,45,45,0.5);
-}
-
-/* MOBILE */
-@media(max-width:900px){
-    .dashboard {
-        grid-template-columns:1fr;
-    }
-    .gauges {
-        grid-template-columns:1fr;
-    }
-}
-</style>
-</head>
-
-<body>
-
-<div class="topbar">
-    <h1>Telemetry Dashboard</h1>
-    <div class="status" id="updatedAt">Waiting for data...</div>
-</div>
-
-<div class="dashboard">
-    <!-- GAUGES -->
-    <div class="panel">
-        <div class="gauges">
-            <div class="gauge">
-                <h3>Speed</h3>
-                <canvas id="speedGauge"></canvas>
-                <div class="value" id="speedValue">0 km/h</div>
-            </div>
-
-            <div class="gauge">
-                <h3>Temperature</h3>
-                <canvas id="tempGauge"></canvas>
-                <div class="value" id="tempValue">0 °C</div>
-            </div>
-
-            <div class="gauge">
-                <h3>Voltage</h3>
-                <canvas id="voltGauge"></canvas>
-                <div class="value" id="voltValue">0 V</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- CAMERA -->
-    <div class="panel camera">
-        <div class="camera-box">
-            <img id="cameraStream" src="<?= htmlspecialchars($cameraStreamUrl) ?>">
-        </div>
-        <div class="camera-status" id="cameraStatus">Connecting...</div>
-    </div>
-</div>
-
-<div class="buttons">
-    <form action="save_session.php" method="post">
-        <button class="save">Stop & Save</button>
-    </form>
-    <form action="stop_session.php" method="post">
-        <button class="stop">Stop</button>
-    </form>
-</div>
-
-<script>
-function getColor(val, max) {
-    const r = val/max;
-    if(r < 0.5) return "#ffffff";
-    if(r < 0.8) return "#ff8a00";
-    return "#ff2d2d";
-}
-
-function createGauge(ctx, val, max){
-    return new Chart(ctx, {
-        type:'doughnut',
-        data:{
-            datasets:[{
-                data:[val, max-val],
-                backgroundColor:[getColor(val,max), "#2a2a2a"],
-                borderWidth:0
-            }]
-        },
-        options:{
-            rotation:-90,
-            circumference:180,
-            cutout:'70%',
-            plugins:{legend:{display:false}}
+    <style>
+        :root {
+            --bg-main: #0a0a0c;
+            --bg-panel: rgba(25, 25, 28, 0.85);
+            --bg-card: rgba(35, 35, 38, 0.90);
+            --border: rgba(255, 255, 255, 0.08);
+            --text-main: #ffffff;
+            --text-soft: #a1a1aa;
+            --accent-red: #ff2d2d;
+            --accent-red-soft: rgba(255, 45, 45, 0.12);
+            --accent-green: #22c55e;
+            --accent-orange: #ff8a00;
+            --shadow: 0 12px 40px rgba(0, 0, 0, 0.60);
+            --glow: 0 0 18px rgba(255, 45, 45, 0.35);
         }
-    });
-}
 
-const speedChart = createGauge(speedGauge,0,45);
-const tempChart  = createGauge(tempGauge,0,100);
-const voltChart  = createGauge(voltGauge,0,15);
+        * {
+            box-sizing: border-box;
+        }
 
-function update(chart,val,max){
-    chart.data.datasets[0].data=[val,max-val];
-    chart.data.datasets[0].backgroundColor=[getColor(val,max),"#2a2a2a"];
-    chart.update();
-}
+        body {
+            margin: 0;
+            min-height: 100vh;
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            background:
+                radial-gradient(circle at top center, rgba(255, 45, 45, 0.12), transparent 30%),
+                radial-gradient(circle at bottom right, rgba(255, 45, 45, 0.08), transparent 28%),
+                linear-gradient(160deg, #050505 0%, #0d0d10 45%, #050505 100%);
+            overflow-x: hidden;
+        }
 
-async function fetchData(){
-    try{
-        const res = await fetch('latest_data.php?_='+Date.now());
-        const d = await res.json();
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background:
+                repeating-linear-gradient(
+                    90deg,
+                    rgba(255,255,255,0.02) 0px,
+                    rgba(255,255,255,0.02) 1px,
+                    transparent 1px,
+                    transparent 80px
+                ),
+                repeating-linear-gradient(
+                    0deg,
+                    rgba(255,255,255,0.015) 0px,
+                    rgba(255,255,255,0.015) 1px,
+                    transparent 1px,
+                    transparent 80px
+                );
+            pointer-events: none;
+            opacity: 0.35;
+        }
 
-        let s = parseFloat(d.speed||0);
-        let t = parseFloat(d.tempC||0);
-        let v = parseFloat(d.voltage||0);
+        .page {
+            width: min(1450px, calc(100% - 40px));
+            margin: 0 auto;
+            padding: 28px 0 36px;
+            position: relative;
+            z-index: 1;
+        }
 
-        update(speedChart,s,45);
-        update(tempChart,t,100);
-        update(voltChart,v,15);
+        .topbar {
+            background: rgba(10, 10, 12, 0.82);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 22px 28px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(14px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+        }
 
-        speedValue.textContent = s.toFixed(1)+" km/h";
-        tempValue.textContent  = t.toFixed(1)+" °C";
-        voltValue.textContent  = v.toFixed(2)+" V";
+        .title-block h1 {
+            margin: 0;
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(28px, 4vw, 40px);
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #ffffff;
+            text-shadow: 0 0 14px rgba(255, 45, 45, 0.20);
+        }
 
-        updatedAt.textContent = d.updated_at || "Waiting for data...";
-    }catch{
-        updatedAt.textContent = "Error reading data";
-    }
-}
+        .title-block p {
+            margin: 8px 0 0;
+            color: var(--text-soft);
+            font-size: 14px;
+            letter-spacing: 0.5px;
+        }
 
-cameraStream.onload = ()=>cameraStatus.textContent="Camera connected";
-cameraStream.onerror = ()=>cameraStatus.textContent="Camera unavailable";
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 18px;
+            border-radius: 999px;
+            background: rgba(255, 45, 45, 0.10);
+            border: 1px solid rgba(255, 45, 45, 0.25);
+            color: #ffffff;
+            font-weight: 600;
+            box-shadow: var(--glow);
+        }
 
-fetchData();
-setInterval(fetchData,500);
-</script>
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--accent-red);
+            box-shadow: 0 0 10px rgba(255, 45, 45, 0.9);
+        }
 
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1.35fr 0.85fr;
+            gap: 24px;
+        }
+
+        .panel {
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 28px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(14px);
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .panel::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 24px;
+            right: 24px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 45, 45, 0.5), transparent);
+        }
+
+        .panel-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .panel-title h2 {
+            margin: 0;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 18px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .panel-title span {
+            color: var(--text-soft);
+            font-size: 13px;
+        }
+
+        .gauges {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+        }
+
+        .gauge-card {
+            background: linear-gradient(180deg, rgba(34, 34, 37, 0.96), rgba(16, 16, 18, 0.96));
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 24px;
+            padding: 20px 18px 18px;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 10px 24px rgba(0,0,0,0.30);
+            position: relative;
+        }
+
+        .gauge-card::after {
+            content: "";
+            position: absolute;
+            inset: auto 18px 0 18px;
+            height: 3px;
+            border-radius: 999px;
+            background: linear-gradient(90deg, transparent, rgba(255,45,45,0.7), transparent);
+            opacity: 0.75;
+        }
+
+        .gauge-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .gauge-header h3 {
+            margin: 0;
+            font-size: 15px;
+            color: #f1f5f9;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .gauge-tag {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            padding: 6px 9px;
+            border-radius: 999px;
+            background: rgba(255,45,45,0.12);
+            color: #ff6b6b;
+            border: 1px solid rgba(255,45,45,0.25);
+        }
+
+        .canvas-wrap {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 6px;
+        }
+
+        canvas {
+            max-width: 230px;
+            margin: 0 auto;
+        }
+
+        .value {
+            margin-top: 10px;
+            text-align: center;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: #ffffff;
+            text-shadow: 0 0 10px rgba(255,255,255,0.05);
+        }
+
+        .unit-note {
+            margin-top: 6px;
+            text-align: center;
+            color: var(--text-soft);
+            font-size: 12px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .camera-card {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .camera-wrapper {
+            flex: 1;
+            min-height: 380px;
+            border-radius: 22px;
+            overflow: hidden;
+            background: linear-gradient(180deg, rgba(8, 8, 10, 0.95), rgba(18, 18, 20, 0.98));
+            border: 1px solid rgba(255,255,255,0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.02);
+            position: relative;
+        }
+
+        .camera-wrapper::before {
+            content: "LIVE FEED";
+            position: absolute;
+            top: 14px;
+            left: 14px;
+            z-index: 2;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1.4px;
+            color: #fff;
+            background: rgba(255, 45, 45, 0.15);
+            border: 1px solid rgba(255, 45, 45, 0.4);
+            padding: 8px 12px;
+            border-radius: 999px;
+            box-shadow: 0 0 12px rgba(255,45,45,0.3);
+        }
+
+        .camera-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .camera-note {
+            margin-top: 14px;
+            color: var(--text-soft);
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .camera-note::before {
+            content: "";
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: var(--accent-green);
+            box-shadow: 0 0 10px rgba(34, 197, 94, 0.8);
+        }
+
+        .buttons {
+            margin-top: 24px;
+            display: flex;
+            justify-content: center;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+
+        .buttons form {
+            margin: 0;
+        }
+
+        .btn {
+            min-width: 200px;
+            border: 1px solid transparent;
+            padding: 15px 28px;
+            border-radius: 16px;
+            cursor: pointer;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 1.4px;
+            text-transform: uppercase;
+            color: white;
+            transition: all 0.25s ease;
+            box-shadow: 0 10px 24px rgba(0,0,0,0.35);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .save {
+            background: linear-gradient(135deg, #16a34a, #22c55e);
+            border-color: rgba(255,255,255,0.08);
+        }
+
+        .save:hover {
+            box-shadow: 0 0 18px rgba(34,197,94,0.30), 0 12px 26px rgba(0,0,0,0.32);
+        }
+
+        .stop {
+            background: linear-gradient(135deg, #b91c1c, #ff2d2d);
+            border-color: rgba(255,255,255,0.08);
+        }
+
+        .stop:hover {
+            box-shadow: 0 0 18px rgba(255,45,45,0.28), 0 12px 26px rgba(0,0,0,0.32);
+        }
+
+        @media (max-width: 1180px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .camera-wrapper {
+                min-height: 320px;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .gauges {
+                grid-template-columns: 1fr;
+            }
+
+            .value {
+                font-size: 24px;
+            }
+
+            .page {
+                width: min(100% - 20px, 1450px);
+            }
+
+            .topbar,
+            .panel {
+                padding: 18px;
+                border-radius: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="topbar">
+            <div class="title-block">
+                <h1>Telemetry Dashboard</h1>
+                <p>Real-time vehicle data monitoring interface</p>
+            </div>
+
+            <div class="status-pill">
+                <span class="status-dot"></span>
+                <span id="updatedAt">Waiting for data...</span>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="panel">
+                <div class="panel-title">
+                    <h2>Performance Gauges</h2>
+                    <span>Live sensor values</span>
+                </div>
+
+                <div class="gauges">
+                    <div class="gauge-card">
+                        <div class="gauge-header">
+                            <h3>Speed</h3>
+                            <div class="gauge-tag">Drive</div>
+                        </div>
+                        <div class="canvas-wrap">
+                            <canvas id="speedGauge"></canvas>
+                        </div>
+                        <div class="value" id="speedValue">0.0 km/h</div>
+                        <div class="unit-note">Vehicle speed</div>
+                    </div>
+
+                    <div class="gauge-card">
+                        <div class="gauge-header">
+                            <h3>Temperature</h3>
+                            <div class="gauge-tag">Engine</div>
+                        </div>
+                        <div class="canvas-wrap">
+                            <canvas id="tempGauge"></canvas>
+                        </div>
+                        <div class="value" id="tempValue">0.0 °C</div>
+                        <div class="unit-note">Thermal reading</div>
+                    </div>
+
+                    <div class="gauge-card">
+                        <div class="gauge-header">
+                            <h3>Voltage</h3>
+                            <div class="gauge-tag">Power</div>
+                        </div>
+                        <div class="canvas-wrap">
+                            <canvas id="voltGauge"></canvas>
+                        </div>
+                        <div class="value" id="voltValue">0.00 V</div>
+                        <div class="unit-note">Electrical system</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel camera-card">
+                <div class="panel-title">
+                    <h2>Live Camera</h2>
+                    <span>ESP32 stream monitor</span>
+                </div>
+
+                <div class="camera-wrapper">
+                    <img id="cameraStream" src="<?= htmlspecialchars($cameraStreamUrl) ?>" alt="ESP Camera Stream">
+                </div>
+
+                <div class="camera-note" id="cameraStatus">Connecting to camera...</div>
+            </div>
+        </div>
+
+        <div class="buttons">
+            <form action="save_session.php" method="post">
+                <button class="btn save" type="submit">Stop and Save</button>
+            </form>
+
+            <form action="stop_session.php" method="post">
+                <button class="btn stop" type="submit">Stop</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function getGaugeColor(value, maxValue, type) {
+            const ratio = value / maxValue;
+
+            if (ratio < 0.5) return '#ffffff';
+            if (ratio < 0.8) return '#ff8a00';
+            return '#ff2d2d';
+        }
+
+        function createGauge(ctx, value, maxValue, type) {
+            return new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    datasets: [{
+                        data: [value, Math.max(maxValue - value, 0)],
+                        backgroundColor: [getGaugeColor(value, maxValue, type), 'rgba(148, 148, 155, 0.18)'],
+                        borderWidth: 0,
+                        hoverOffset: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    rotation: -90,
+                    circumference: 180,
+                    cutout: '72%',
+                    animation: {
+                        duration: 300
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { enabled: false }
+                    }
+                }
+            });
+        }
+
+        const speedChart = createGauge(document.getElementById('speedGauge'), 0, 45, 'speed');
+        const tempChart  = createGauge(document.getElementById('tempGauge'), 0, 100, 'temp');
+        const voltChart  = createGauge(document.getElementById('voltGauge'), 0, 15, 'volt');
+
+        function updateGauge(chart, value, max, type) {
+            const safeValue = Math.max(0, Math.min(value, max));
+            chart.data.datasets[0].data = [safeValue, max - safeValue];
+            chart.data.datasets[0].backgroundColor = [
+                getGaugeColor(safeValue, max, type),
+                'rgba(148, 148, 155, 0.18)'
+            ];
+            chart.update();
+        }
+
+        async function fetchData() {
+            try {
+                const response = await fetch('latest_data.php?_=' + new Date().getTime());
+                const data = await response.json();
+
+                const speed = parseFloat(data.speed || 0);
+                const temp = parseFloat(data.tempC || 0);
+                const volt = parseFloat(data.voltage || 0);
+
+                updateGauge(speedChart, speed, 45, 'speed');
+                updateGauge(tempChart, temp, 100, 'temp');
+                updateGauge(voltChart, volt, 15, 'volt');
+
+                document.getElementById('speedValue').textContent = `${speed.toFixed(1)} km/h`;
+                document.getElementById('tempValue').textContent  = `${temp.toFixed(1)} °C`;
+                document.getElementById('voltValue').textContent  = `${volt.toFixed(2)} V`;
+
+                document.getElementById('updatedAt').textContent =
+                    data.updated_at ? `Last update: ${data.updated_at}` : 'Waiting for data...';
+            } catch (err) {
+                document.getElementById('updatedAt').textContent = 'Error reading live data';
+            }
+        }
+
+        const cam = document.getElementById('cameraStream');
+        const cameraStatus = document.getElementById('cameraStatus');
+
+        cam.onload = function() {
+            cameraStatus.textContent = 'Camera connected';
+            cameraStatus.style.color = '#d4d4d8';
+        };
+
+        cam.onerror = function() {
+            cameraStatus.textContent = 'Camera stream unavailable';
+            cameraStatus.style.color = '#fca5a5';
+        };
+
+        fetchData();
+        setInterval(fetchData, 500);
+    </script>
 </body>
 </html>
