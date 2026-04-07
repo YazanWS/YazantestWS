@@ -155,7 +155,6 @@ if ($pdo) {
                 <form method="get" action="previous_laps.php" style="margin:0">
                     <button class="btn" type="submit">Refresh</button>
                 </form>
-                <a class="btn primary" href="view_lap.php">Open Graph Viewer</a>
             </div>
         </div>
     </div>
