@@ -607,7 +607,6 @@ $cameraStreamUrl = "http://192.168.137.8:81/stream";
             <div class="panel camera-card">
                 <div class="panel-title">
                     <h2>Live Camera</h2>
-                    <span>ESP32 stream monitor</span>
                 </div>
 
                 <div class="camera-wrapper">
