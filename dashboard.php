@@ -165,7 +165,7 @@ $cameraStreamUrl = "http://192.168.137.8:81/stream";
             display: none;
             z-index: 9999;
         }
-        
+
         .menu-dropdown.show {
             display: block;
         }
@@ -558,7 +558,7 @@ $cameraStreamUrl = "http://192.168.137.8:81/stream";
         <div class="dashboard-grid">
             <div class="panel">
                 <div class="panel-title">
-                    <h2>Performance Gauges</h2>
+                    <h2>Gauges</h2>
 
                     <div class="panel-title-right">
                         <span>Live sensor values</span>
@@ -573,7 +573,6 @@ $cameraStreamUrl = "http://192.168.137.8:81/stream";
                     <div class="gauge-card">
                         <div class="gauge-header">
                             <h3>Speed</h3>
-                            <div class="gauge-tag">Drive</div>
                         </div>
                         <div class="canvas-wrap">
                             <canvas id="speedGauge"></canvas>
@@ -585,25 +584,23 @@ $cameraStreamUrl = "http://192.168.137.8:81/stream";
                     <div class="gauge-card">
                         <div class="gauge-header">
                             <h3>Temperature</h3>
-                            <div class="gauge-tag">Engine</div>
                         </div>
                         <div class="canvas-wrap">
                             <canvas id="tempGauge"></canvas>
                         </div>
                         <div class="value" id="tempValue">0.0 °C</div>
-                        <div class="unit-note">Thermal reading</div>
+                        <div class="unit-note">Temperature</div>
                     </div>
 
                     <div class="gauge-card">
                         <div class="gauge-header">
                             <h3>Voltage</h3>
-                            <div class="gauge-tag">Power</div>
                         </div>
                         <div class="canvas-wrap">
                             <canvas id="voltGauge"></canvas>
                         </div>
                         <div class="value" id="voltValue">0.00 V</div>
-                        <div class="unit-note">Electrical system</div>
+                        <div class="unit-note">Battery Voltage</div>
                     </div>
                 </div>
             </div>
