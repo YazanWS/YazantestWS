@@ -115,7 +115,7 @@ $cameraStreamUrl = "http://192.168.137.8:81/stream";
         .topbar-right {
             position: relative;
             z-index: 60;
-}
+        }
 
         .menu-toggle {
             width: 56px;
@@ -267,6 +267,19 @@ $cameraStreamUrl = "http://192.168.137.8:81/stream";
             font-weight: 600;
             box-shadow: var(--glow);
             max-width: 100%;
+            transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .status-pill.status-green {
+            background: rgba(34, 197, 94, 0.10);
+            border: 1px solid rgba(34, 197, 94, 0.28);
+            box-shadow: 0 0 18px rgba(34, 197, 94, 0.28);
+        }
+
+        .status-pill.status-red {
+            background: rgba(255, 45, 45, 0.10);
+            border: 1px solid rgba(255, 45, 45, 0.25);
+            box-shadow: var(--glow);
         }
 
         .status-pill-text {
@@ -280,6 +293,7 @@ $cameraStreamUrl = "http://192.168.137.8:81/stream";
             background: var(--accent-red);
             box-shadow: 0 0 10px rgba(255, 45, 45, 0.9);
             flex-shrink: 0;
+            transition: background 0.2s ease, box-shadow 0.2s ease;
         }
 
         .gauges {
@@ -321,18 +335,6 @@ $cameraStreamUrl = "http://192.168.137.8:81/stream";
             font-weight: 600;
             letter-spacing: 0.5px;
             text-transform: uppercase;
-        }
-
-        .gauge-tag {
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 1.2px;
-            text-transform: uppercase;
-            padding: 6px 9px;
-            border-radius: 999px;
-            background: rgba(255,45,45,0.12);
-            color: #ff6b6b;
-            border: 1px solid rgba(255,45,45,0.25);
         }
 
         .canvas-wrap {
@@ -561,8 +563,8 @@ $cameraStreamUrl = "http://192.168.137.8:81/stream";
                     <h2>Gauges</h2>
 
                     <div class="panel-title-right">
-                        <div class="status-pill">
-                            <span class="status-dot"></span>
+                        <div class="status-pill status-red" id="statusPill">
+                            <span class="status-dot" id="statusDot"></span>
                             <span class="status-pill-text" id="updatedAt">Waiting for data...</span>
                         </div>
                     </div>
@@ -679,6 +681,30 @@ $cameraStreamUrl = "http://192.168.137.8:81/stream";
             chart.update();
         }
 
+        function setStatusWaiting() {
+            const statusPill = document.getElementById('statusPill');
+            const statusDot = document.getElementById('statusDot');
+            const statusText = document.getElementById('updatedAt');
+
+            statusPill.classList.remove('status-green');
+            statusPill.classList.add('status-red');
+            statusDot.style.background = '#ff2d2d';
+            statusDot.style.boxShadow = '0 0 10px rgba(255, 45, 45, 0.9)';
+            statusText.textContent = 'Waiting for data...';
+        }
+
+        function setStatusReceiving() {
+            const statusPill = document.getElementById('statusPill');
+            const statusDot = document.getElementById('statusDot');
+            const statusText = document.getElementById('updatedAt');
+
+            statusPill.classList.remove('status-red');
+            statusPill.classList.add('status-green');
+            statusDot.style.background = '#22c55e';
+            statusDot.style.boxShadow = '0 0 10px rgba(34, 197, 94, 0.9)';
+            statusText.textContent = 'Receiving data';
+        }
+
         async function fetchData() {
             try {
                 const response = await fetch('latest_data.php?_=' + new Date().getTime());
@@ -696,10 +722,13 @@ $cameraStreamUrl = "http://192.168.137.8:81/stream";
                 document.getElementById('tempValue').textContent  = `${temp.toFixed(1)} °C`;
                 document.getElementById('voltValue').textContent  = `${volt.toFixed(2)} V`;
 
-                document.getElementById('updatedAt').textContent =
-                    data.updated_at ? `Last update: ${data.updated_at}` : 'Waiting for data...';
+                if (speed !== 0 || temp !== 0 || volt !== 0) {
+                    setStatusReceiving();
+                } else {
+                    setStatusWaiting();
+                }
             } catch (err) {
-                document.getElementById('updatedAt').textContent = 'Error reading live data';
+                setStatusWaiting();
             }
         }
 
@@ -719,17 +748,18 @@ $cameraStreamUrl = "http://192.168.137.8:81/stream";
         const menuToggle = document.getElementById('menuToggle');
         const menuDropdown = document.getElementById('menuDropdown');
 
-        menuToggle.addEventListener('click', function (e) {
+        menuToggle.addEventListener('click', function(e) {
             e.stopPropagation();
             menuDropdown.classList.toggle('show');
         });
 
-        document.addEventListener('click', function (e) {
+        document.addEventListener('click', function(e) {
             if (!menuDropdown.contains(e.target) && !menuToggle.contains(e.target)) {
                 menuDropdown.classList.remove('show');
             }
         });
 
+        setStatusWaiting();
         fetchData();
         setInterval(fetchData, 500);
     </script>
