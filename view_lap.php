@@ -160,8 +160,16 @@ if ($table) {
                     responsive: true,
                     plugins: { legend: { display: false } },
                     scales: {
-                        x: { title: { display: true, text: 'time', color: '#fff' }, ticks: { color: '#fff' } },
-                        y: { title: { display: true, text: col, color: '#fff' }, ticks: { color: '#fff' } }
+                            x: { 
+                            title: { display: true, text: 'time', color: '#fff' },
+                            ticks: { color: '#fff' },
+                            grid: { color: 'rgba(200,200,200,0.3)' }   // light gray grid
+                            },
+                            y: { 
+                            title: { display: true, text: col, color: '#fff' },
+                            ticks: { color: '#fff' },
+                            grid: { color: 'rgba(200,200,200,0.3)' }   // light gray grid
+                            }
                     }
                 }
             });
