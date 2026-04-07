@@ -561,7 +561,6 @@ $cameraStreamUrl = "http://192.168.137.8:81/stream";
                     <h2>Gauges</h2>
 
                     <div class="panel-title-right">
-                        <span>Live sensor values</span>
                         <div class="status-pill">
                             <span class="status-dot"></span>
                             <span class="status-pill-text" id="updatedAt">Waiting for data...</span>
