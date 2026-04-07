@@ -1,6 +1,6 @@
 <?php
 // view_lap.php
-// Displays all columns in the selected table as graphs (value vs id)
+// Displays all columns in the selected table as graphs (value vs lap_time)
 $db_host = 'localhost';
 $db_name = 'sensor_dash';
 $db_user = 'yazan';
@@ -17,16 +17,19 @@ if ($table) {
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
         ]);
+
         // Get columns
         $stmt = $pdo->query("SHOW COLUMNS FROM `" . str_replace("`", "``", $table) . "`");
         while ($col = $stmt->fetch()) {
             $columns[] = $col['Field'];
         }
+
         // Get all rows
         $stmt = $pdo->query("SELECT * FROM `" . str_replace("`", "``", $table) . "`");
         while ($row = $stmt->fetch()) {
             $rows[] = $row;
         }
+
     } catch (Exception $e) {
         $error = $e->getMessage();
     }
@@ -52,7 +55,6 @@ if ($table) {
             --text-soft: #a1a1aa;
             --accent-red: #ff2d2d;
             --shadow: 0 12px 40px rgba(0, 0, 0, 0.60);
-            --glow: 0 0 18px rgba(255, 45, 45, 0.35);
         }
         * { box-sizing: border-box; }
         body {
@@ -90,15 +92,7 @@ if ($table) {
         .graph-title {
             font-family:'Orbitron', sans-serif; font-weight:700; font-size:17px; letter-spacing:1px; margin-bottom:10px;
         }
-        .actions { display:flex; gap:12px; margin-top:18px; }
         .btn { padding:10px 14px; border-radius:10px; background:transparent; border:1px solid rgba(255,255,255,0.06); color:var(--text-main); cursor:pointer }
-        .btn.primary { background: linear-gradient(135deg,#ff4d4d,#ff2d2d); border-color: rgba(255,255,255,0.06) }
-        .error { background:#2b0000; padding:12px; border-radius:8px; color:#ffd6d6; margin-bottom:12px }
-        .note { color:var(--text-soft); margin-top:12px; font-size:13px }
-        @media (max-width:640px) {
-            .title-block h1 { font-size:20px }
-            .graph-list { grid-template-columns: 1fr }
-        }
     </style>
 </head>
 <body>
@@ -112,6 +106,7 @@ if ($table) {
                 <a href="previous_laps.php" class="btn">Back to Laps</a>
             </div>
         </div>
+
         <div class="panel">
             <?php if ($error): ?>
                 <div class="error">Error: <?= htmlspecialchars($error) ?></div>
@@ -121,9 +116,9 @@ if ($table) {
                 <div class="note">No data found in this table.</div>
             <?php else: ?>
                 <div class="graph-list">
-                    <?php foreach ($columns as $col): if ($col === 'id') continue; ?>
+                    <?php foreach ($columns as $col): if ($col === 'id' || $col === 'lap_time') continue; ?>
                     <div class="graph-card">
-                        <div class="graph-title"><?= htmlspecialchars($col) ?> vs id</div>
+                        <div class="graph-title"><?= htmlspecialchars($col) ?> vs time</div>
                         <canvas id="chart_<?= htmlspecialchars($col) ?>"></canvas>
                     </div>
                     <?php endforeach; ?>
@@ -131,23 +126,28 @@ if ($table) {
             <?php endif; ?>
         </div>
     </div>
+
     <?php if ($table && !$error && !empty($columns) && !empty($rows)): ?>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         const rows = <?= json_encode($rows) ?>;
         const columns = <?= json_encode($columns) ?>;
+
         columns.forEach(col => {
-            if (col === 'id') return;
+            if (col === 'id' || col === 'lap_time') return;
+
             const ctx = document.getElementById('chart_' + col);
             if (!ctx) return;
+
             const data = rows.map(r => parseFloat(r[col]));
-            const ids = rows.map(r => r['id']);
+            const time = rows.map(r => parseFloat(r['lap_time']));
+
             new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: ids,
+                    labels: time,
                     datasets: [{
-                        label: col + ' vs id',
+                        label: col + ' vs time',
                         data: data,
                         borderColor: '#ff2d2d',
                         backgroundColor: 'rgba(255,45,45,0.13)',
@@ -160,7 +160,7 @@ if ($table) {
                     responsive: true,
                     plugins: { legend: { display: false } },
                     scales: {
-                        x: { title: { display: true, text: 'id', color: '#fff' }, ticks: { color: '#fff' } },
+                        x: { title: { display: true, text: 'time', color: '#fff' }, ticks: { color: '#fff' } },
                         y: { title: { display: true, text: col, color: '#fff' }, ticks: { color: '#fff' } }
                     }
                 }
