@@ -243,11 +243,6 @@ $cameraStreamUrl = "http://192.168.137.8:81/stream";
             text-transform: uppercase;
         }
 
-        .panel-title span {
-            color: var(--text-soft);
-            font-size: 13px;
-        }
-
         .panel-title-right {
             display: flex;
             align-items: center;
@@ -705,6 +700,9 @@ $cameraStreamUrl = "http://192.168.137.8:81/stream";
             statusText.textContent = 'Receiving data';
         }
 
+        let lastUpdatedAt = null;
+        let sameTimestampCount = 0;
+
         async function fetchData() {
             try {
                 const response = await fetch('latest_data.php?_=' + new Date().getTime());
@@ -722,12 +720,29 @@ $cameraStreamUrl = "http://192.168.137.8:81/stream";
                 document.getElementById('tempValue').textContent  = `${temp.toFixed(1)} °C`;
                 document.getElementById('voltValue').textContent  = `${volt.toFixed(2)} V`;
 
-                if (speed !== 0 || temp !== 0 || volt !== 0) {
+                const currentUpdatedAt = data.updated_at ? String(data.updated_at) : '';
+
+                if (!currentUpdatedAt) {
+                    sameTimestampCount++;
+                    setStatusWaiting();
+                    return;
+                }
+
+                if (currentUpdatedAt !== lastUpdatedAt) {
+                    lastUpdatedAt = currentUpdatedAt;
+                    sameTimestampCount = 0;
                     setStatusReceiving();
                 } else {
-                    setStatusWaiting();
+                    sameTimestampCount++;
+
+                    if (sameTimestampCount >= 3) {
+                        setStatusWaiting();
+                    } else {
+                        setStatusReceiving();
+                    }
                 }
             } catch (err) {
+                sameTimestampCount++;
                 setStatusWaiting();
             }
         }
