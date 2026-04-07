@@ -256,11 +256,8 @@ $cameraStreamUrl = "http://192.168.137.8:81/stream";
             gap: 10px;
             padding: 10px 16px;
             border-radius: 999px;
-            background: rgba(255, 45, 45, 0.10);
-            border: 1px solid rgba(255, 45, 45, 0.25);
             color: #ffffff;
             font-weight: 600;
-            box-shadow: var(--glow);
             max-width: 100%;
             transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
         }
@@ -285,8 +282,6 @@ $cameraStreamUrl = "http://192.168.137.8:81/stream";
             width: 10px;
             height: 10px;
             border-radius: 50%;
-            background: var(--accent-red);
-            box-shadow: 0 0 10px rgba(255, 45, 45, 0.9);
             flex-shrink: 0;
             transition: background 0.2s ease, box-shadow 0.2s ease;
         }
@@ -700,12 +695,13 @@ $cameraStreamUrl = "http://192.168.137.8:81/stream";
             statusText.textContent = 'Receiving data';
         }
 
-        let lastUpdatedAt = null;
-        let sameTimestampCount = 0;
+        let lastGoodDataTime = 0;
 
         async function fetchData() {
             try {
-                const response = await fetch('latest_data.php?_=' + new Date().getTime());
+                const response = await fetch('latest_data.php?_=' + Date.now(), { cache: 'no-store' });
+                if (!response.ok) throw new Error('Bad response');
+
                 const data = await response.json();
 
                 const speed = parseFloat(data.speed || 0);
@@ -720,30 +716,20 @@ $cameraStreamUrl = "http://192.168.137.8:81/stream";
                 document.getElementById('tempValue').textContent  = `${temp.toFixed(1)} °C`;
                 document.getElementById('voltValue').textContent  = `${volt.toFixed(2)} V`;
 
-                const currentUpdatedAt = data.updated_at ? String(data.updated_at) : '';
-
-                if (!currentUpdatedAt) {
-                    sameTimestampCount++;
-                    setStatusWaiting();
-                    return;
-                }
-
-                if (currentUpdatedAt !== lastUpdatedAt) {
-                    lastUpdatedAt = currentUpdatedAt;
-                    sameTimestampCount = 0;
-                    setStatusReceiving();
-                } else {
-                    sameTimestampCount++;
-
-                    if (sameTimestampCount >= 3) {
-                        setStatusWaiting();
-                    } else {
-                        setStatusReceiving();
-                    }
-                }
+                lastGoodDataTime = Date.now();
+                setStatusReceiving();
             } catch (err) {
-                sameTimestampCount++;
+                // no-op here, watcher below will switch to waiting if needed
+            }
+        }
+
+        function watchDataTimeout() {
+            const now = Date.now();
+
+            if (!lastGoodDataTime || (now - lastGoodDataTime > 2000)) {
                 setStatusWaiting();
+            } else {
+                setStatusReceiving();
             }
         }
 
@@ -777,6 +763,7 @@ $cameraStreamUrl = "http://192.168.137.8:81/stream";
         setStatusWaiting();
         fetchData();
         setInterval(fetchData, 500);
+        setInterval(watchDataTimeout, 250);
     </script>
 </body>
 </html>
