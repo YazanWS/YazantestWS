@@ -360,6 +360,26 @@ $cameraStreamUrl = "http://192.168.137.8:81/stream";
             text-transform: uppercase;
         }
 
+        /* crash pill styling */
+        .crash-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            border-radius: 999px;
+            color: #ffffff;
+            font-weight: 700;
+            margin-top: 16px;
+            background: rgba(255, 45, 45, 0.10);
+            border: 1px solid rgba(255,45,45,0.22);
+            box-shadow: 0 0 14px rgba(255,45,45,0.12);
+        }
+        .crash-pill .count {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 18px;
+            color: #ffdddd;
+        }
+
         .camera-card {
             height: 100%;
             display: flex;
@@ -594,6 +614,15 @@ $cameraStreamUrl = "http://192.168.137.8:81/stream";
                         <div class="unit-note">Battery Voltage</div>
                     </div>
                 </div>
+
+                <!-- crash pill showing total number of crash events (counts every incoming 1) -->
+                <div style="display:flex; justify-content:center;">
+                    <div id="crashPill" class="crash-pill" role="status" aria-live="polite">
+                        <div class="status-dot" style="width:12px; height:12px; border-radius:50%; background:#ff2d2d; box-shadow:0 0 8px rgba(255,45,45,0.6);"></div>
+                        <div class="status-pill-text">Crashes: <span id="crashCount" class="count">0</span></div>
+                    </div>
+                </div>
+
             </div>
 
             <div class="panel camera-card">
@@ -696,6 +725,8 @@ $cameraStreamUrl = "http://192.168.137.8:81/stream";
         }
 
         let lastGoodDataTime = 0;
+        // crash counter (increments on every incoming '1' crash value)
+        let crashCount = 0;
 
         async function fetchData() {
             try {
@@ -707,6 +738,15 @@ $cameraStreamUrl = "http://192.168.137.8:81/stream";
                 const speed = parseFloat(data.speed || 0);
                 const temp = parseFloat(data.tempC || 0);
                 const volt = parseFloat(data.voltage || 0);
+
+                // handle crash boolean/flag in the incoming data (accept 'crash', 'crashes', or 'crash_flag')
+                const crashRaw = data.crash ?? data.crashes ?? data.crash_flag ?? null;
+                const crashVal = crashRaw !== null ? parseInt(crashRaw) : NaN;
+                if (!Number.isNaN(crashVal) && crashVal === 1) {
+                    crashCount += 1;
+                    const crashEl = document.getElementById('crashCount');
+                    if (crashEl) crashEl.textContent = String(crashCount);
+                }
 
                 updateGauge(speedChart, speed, 45, 'speed');
                 updateGauge(tempChart, temp, 100, 'temp');
