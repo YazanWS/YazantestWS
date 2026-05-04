@@ -1,12 +1,8 @@
 <?php
-if (isset($_GET['light'])) {
-    $cmd = $_GET['light'];
-
-    if ($cmd === "ON") {
-        file_put_contents("command.txt", "LIGHT_ON");
-    } 
-    else if ($cmd === "OFF") {
-        file_put_contents("command.txt", "LIGHT_OFF");
-    }
+$command = $_POST['command'] ?? '';
+$allowed = ['LIGHT_ON', 'LIGHT_OFF', ''];
+if (in_array($command, $allowed)) {
+    file_put_contents('/tmp/command.txt', $command);
 }
+echo "OK";
 ?>

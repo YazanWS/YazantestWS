@@ -7,13 +7,13 @@ $cameraStreamUrl = "http://192.168.137.8:81/stream";
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Live Dashboard</title>
-
+ 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+ 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-
+ 
     <style>
         :root {
             --bg-main: #0a0a0c;
@@ -320,7 +320,6 @@ $cameraStreamUrl = "http://192.168.137.8:81/stream";
             letter-spacing: 1px;
             text-transform: uppercase;
         }
-        /* crash pill styling */
         .crash-pill {
             display: inline-flex;
             align-items: center;
@@ -338,6 +337,74 @@ $cameraStreamUrl = "http://192.168.137.8:81/stream";
             font-family: 'Orbitron', sans-serif;
             font-size: 18px;
             color: #ffdddd;
+        }
+        /* Light control pill */
+        .light-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            border-radius: 999px;
+            color: #ffffff;
+            font-weight: 700;
+            margin-top: 16px;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 45, 45, 0.35);
+            box-shadow: 0 0 14px rgba(255,45,45,0.10);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+        }
+        .light-pill.lights-on {
+            background: rgba(255, 220, 50, 0.10);
+            border-color: rgba(255, 220, 50, 0.45);
+            box-shadow: 0 0 18px rgba(255, 220, 50, 0.25);
+        }
+        .light-pill-label {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 13px;
+            letter-spacing: 1px;
+            color: #ff2d2d;
+            transition: color 0.3s ease;
+        }
+        .light-pill.lights-on .light-pill-label {
+            color: #fde047;
+        }
+        .light-icon {
+            font-size: 18px;
+            line-height: 1;
+            transition: filter 0.3s ease;
+        }
+        .light-pill.lights-on .light-icon {
+            filter: drop-shadow(0 0 6px rgba(255, 220, 50, 0.8));
+        }
+        .light-btn {
+            border: none;
+            border-radius: 8px;
+            padding: 6px 14px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .light-btn:hover {
+            transform: translateY(-1px);
+        }
+        .light-btn-on {
+            background: #22c55e;
+            color: #fff;
+            box-shadow: 0 0 10px rgba(34, 197, 94, 0.35);
+        }
+        .light-btn-on:hover {
+            box-shadow: 0 0 16px rgba(34, 197, 94, 0.55);
+        }
+        .light-btn-off {
+            background: #ff2d2d;
+            color: #fff;
+            box-shadow: 0 0 10px rgba(255, 45, 45, 0.35);
+        }
+        .light-btn-off:hover {
+            box-shadow: 0 0 16px rgba(255, 45, 45, 0.55);
         }
         .camera-card {
             height: 100%;
@@ -358,7 +425,7 @@ $cameraStreamUrl = "http://192.168.137.8:81/stream";
             position: relative;
         }
         .camera-wrapper::before {
-            content: \"LIVE FEED\";
+            content: "LIVE FEED";
             position: absolute;
             top: 14px;
             left: 14px;
@@ -500,6 +567,7 @@ $cameraStreamUrl = "http://192.168.137.8:81/stream";
                 </div>
             </div>
         </div>
+ 
         <div class="dashboard-grid">
             <div class="panel">
                 <div class="panel-title">
@@ -543,19 +611,23 @@ $cameraStreamUrl = "http://192.168.137.8:81/stream";
                         <div class="unit-note">Battery Voltage</div>
                     </div>
                 </div>
-                <!-- crash and light pills in a row -->
-                <div style="display:flex; justify-content:center; gap:18px; margin-top:16px;">
+ 
+                <!-- Crash + Headlights row -->
+                <div style="display:flex; justify-content:center; gap:18px; flex-wrap:wrap; margin-top:16px;">
                     <div id="crashPill" class="crash-pill" role="status" aria-live="polite">
-                        <div class="status-dot" style="width:12px; height:12px; border-radius:50%; background:#ff2d2d; box-shadow:0 0 8px rgba(255,45,45,0.6);"></div>
+                        <div class="status-dot" style="width:12px;height:12px;border-radius:50%;background:#ff2d2d;box-shadow:0 0 8px rgba(255,45,45,0.6);"></div>
                         <div class="status-pill-text">Crashes: <span id="crashCount" class="count">0</span></div>
                     </div>
-                    <div class="crash-pill" style="background:rgba(255,255,255,0.07); border:1px solid #ff2d2d;">
-                        <span style="margin-right:10px; color:#ff2d2d; font-weight:700;">Headlights</span>
-                        <button onclick="setLight('ON')" style="margin-right:6px; background:#22c55e; color:#fff; border:none; border-radius:6px; padding:6px 14px; font-family:'Orbitron',sans-serif; font-weight:700; cursor:pointer;">ON</button>
-                        <button onclick="setLight('OFF')" style="background:#ff2d2d; color:#fff; border:none; border-radius:6px; padding:6px 14px; font-family:'Orbitron',sans-serif; font-weight:700; cursor:pointer;">OFF</button>
+ 
+                    <div class="light-pill" id="lightPill">
+                        <span class="light-icon" id="lightIcon">💡</span>
+                        <span class="light-pill-label" id="lightLabel">Headlights</span>
+                        <button class="light-btn light-btn-on" onclick="setLight('ON')">ON</button>
+                        <button class="light-btn light-btn-off" onclick="setLight('OFF')">OFF</button>
                     </div>
                 </div>
             </div>
+ 
             <div class="panel camera-card">
                 <div class="panel-title">
                     <h2>Live Camera</h2>
@@ -566,6 +638,7 @@ $cameraStreamUrl = "http://192.168.137.8:81/stream";
                 <div class="camera-note" id="cameraStatus">Connecting to camera...</div>
             </div>
         </div>
+ 
         <div class="buttons">
             <form action="save_session.php" method="post">
                 <button class="btn save" type="submit">Stop and Save</button>
@@ -575,25 +648,43 @@ $cameraStreamUrl = "http://192.168.137.8:81/stream";
             </form>
         </div>
     </div>
+ 
     <script>
+        // ── Light control ──────────────────────────────────────────────
+        let lightsOn = false;
+ 
         function setLight(state) {
-            fetch("set_command.php?light=" + state)
-                .then(() => console.log("Sent:", state))
-                .catch(err => console.error(err));
+            fetch('set_command.php?light=' + state)
+                .then(() => {
+                    lightsOn = (state === 'ON');
+                    const pill  = document.getElementById('lightPill');
+                    const label = document.getElementById('lightLabel');
+                    if (lightsOn) {
+                        pill.classList.add('lights-on');
+                        label.textContent = 'Lights ON';
+                    } else {
+                        pill.classList.remove('lights-on');
+                        label.textContent = 'Headlights';
+                    }
+                })
+                .catch(err => console.error('Light command failed:', err));
         }
-        function getGaugeColor(value, maxValue, type) {
+ 
+        // ── Gauge helpers ──────────────────────────────────────────────
+        function getGaugeColor(value, maxValue) {
             const ratio = value / maxValue;
             if (ratio < 0.5) return '#ffffff';
             if (ratio < 0.8) return '#ff8a00';
             return '#ff2d2d';
         }
-        function createGauge(ctx, value, maxValue, type) {
+ 
+        function createGauge(ctx, value, maxValue) {
             return new Chart(ctx, {
                 type: 'doughnut',
                 data: {
                     datasets: [{
                         data: [value, Math.max(maxValue - value, 0)],
-                        backgroundColor: [getGaugeColor(value, maxValue, type), 'rgba(148, 148, 155, 0.18)'],
+                        backgroundColor: [getGaugeColor(value, maxValue), 'rgba(148, 148, 155, 0.18)'],
                         borderWidth: 0,
                         hoverOffset: 0
                     }]
@@ -604,9 +695,7 @@ $cameraStreamUrl = "http://192.168.137.8:81/stream";
                     rotation: -90,
                     circumference: 180,
                     cutout: '72%',
-                    animation: {
-                        duration: 300
-                    },
+                    animation: { duration: 300 },
                     plugins: {
                         legend: { display: false },
                         tooltip: { enabled: false }
@@ -614,102 +703,106 @@ $cameraStreamUrl = "http://192.168.137.8:81/stream";
                 }
             });
         }
-        const speedChart = createGauge(document.getElementById('speedGauge'), 0, 45, 'speed');
-        const tempChart  = createGauge(document.getElementById('tempGauge'), 0, 100, 'temp');
-        const voltChart  = createGauge(document.getElementById('voltGauge'), 0, 15, 'volt');
-        function updateGauge(chart, value, max, type) {
+ 
+        const speedChart = createGauge(document.getElementById('speedGauge'), 0, 45);
+        const tempChart  = createGauge(document.getElementById('tempGauge'),  0, 100);
+        const voltChart  = createGauge(document.getElementById('voltGauge'),  0, 15);
+ 
+        function updateGauge(chart, value, max) {
             const safeValue = Math.max(0, Math.min(value, max));
             chart.data.datasets[0].data = [safeValue, max - safeValue];
-            chart.data.datasets[0].backgroundColor = [
-                getGaugeColor(safeValue, max, type),
-                'rgba(148, 148, 155, 0.18)'
-            ];
+            chart.data.datasets[0].backgroundColor = [getGaugeColor(safeValue, max), 'rgba(148, 148, 155, 0.18)'];
             chart.update();
         }
+ 
+        // ── Status pill ────────────────────────────────────────────────
         function setStatusWaiting() {
-            const statusPill = document.getElementById('statusPill');
-            const statusDot = document.getElementById('statusDot');
-            const statusText = document.getElementById('updatedAt');
-            statusPill.classList.remove('status-green');
-            statusPill.classList.add('status-red');
-            statusDot.style.background = '#ff2d2d';
-            statusDot.style.boxShadow = '0 0 10px rgba(255, 45, 45, 0.9)';
-            statusText.textContent = 'Waiting for data...';
+            const pill = document.getElementById('statusPill');
+            const dot  = document.getElementById('statusDot');
+            const txt  = document.getElementById('updatedAt');
+            pill.classList.remove('status-green');
+            pill.classList.add('status-red');
+            dot.style.background  = '#ff2d2d';
+            dot.style.boxShadow   = '0 0 10px rgba(255, 45, 45, 0.9)';
+            txt.textContent = 'Waiting for data...';
         }
+ 
         function setStatusReceiving() {
-            const statusPill = document.getElementById('statusPill');
-            const statusDot = document.getElementById('statusDot');
-            const statusText = document.getElementById('updatedAt');
-            statusPill.classList.remove('status-red');
-            statusPill.classList.add('status-green');
-            statusDot.style.background = '#22c55e';
-            statusDot.style.boxShadow = '0 0 10px rgba(34, 197, 94, 0.9)';
-            statusText.textContent = 'Receiving data';
+            const pill = document.getElementById('statusPill');
+            const dot  = document.getElementById('statusDot');
+            const txt  = document.getElementById('updatedAt');
+            pill.classList.remove('status-red');
+            pill.classList.add('status-green');
+            dot.style.background  = '#22c55e';
+            dot.style.boxShadow   = '0 0 10px rgba(34, 197, 94, 0.9)';
+            txt.textContent = 'Receiving data';
         }
+ 
+        // ── Data fetch ─────────────────────────────────────────────────
         let lastGoodDataTime = 0;
-        // crash counter (increments on every incoming '1' crash value)
         let crashCount = 0;
+ 
         async function fetchData() {
             try {
                 const response = await fetch('latest_data.php?_=' + Date.now(), { cache: 'no-store' });
                 if (!response.ok) throw new Error('Bad response');
                 const data = await response.json();
-                const speed = parseFloat(data.speed || 0);
-                const temp = parseFloat(data.tempC || 0);
-                const volt = parseFloat(data.voltage || 0);
-                // handle crash boolean/flag in the incoming data (accept 'crash', 'crashes', or 'crash_flag')
+ 
+                const speed = parseFloat(data.speed   || 0);
+                const temp  = parseFloat(data.tempC   || 0);
+                const volt  = parseFloat(data.voltage || 0);
+ 
                 const crashRaw = data.crash ?? data.crashes ?? data.crash_flag ?? null;
                 const crashVal = crashRaw !== null ? parseInt(crashRaw) : NaN;
                 if (!Number.isNaN(crashVal) && crashVal === 1) {
-                    crashCount += 1;
+                    crashCount++;
                     const crashEl = document.getElementById('crashCount');
                     if (crashEl) crashEl.textContent = String(crashCount);
                 }
-                updateGauge(speedChart, speed, 45, 'speed');
-                updateGauge(tempChart, temp, 100, 'temp');
-                updateGauge(voltChart, volt, 15, 'volt');
+ 
+                updateGauge(speedChart, speed, 45);
+                updateGauge(tempChart,  temp,  100);
+                updateGauge(voltChart,  volt,  15);
+ 
                 document.getElementById('speedValue').textContent = `${speed.toFixed(1)} km/h`;
                 document.getElementById('tempValue').textContent  = `${temp.toFixed(1)} °C`;
                 document.getElementById('voltValue').textContent  = `${volt.toFixed(2)} V`;
+ 
                 lastGoodDataTime = Date.now();
                 setStatusReceiving();
             } catch (err) {
-                // no-op here, watcher below will switch to waiting if needed
+                // watcher below handles the UI switch
             }
         }
+ 
         function watchDataTimeout() {
-            const now = Date.now();
-            if (!lastGoodDataTime || (now - lastGoodDataTime > 2000)) {
+            if (!lastGoodDataTime || (Date.now() - lastGoodDataTime > 2000)) {
                 setStatusWaiting();
             } else {
                 setStatusReceiving();
             }
         }
-        const cam = document.getElementById('cameraStream');
+ 
+        // ── Camera ─────────────────────────────────────────────────────
+        const cam          = document.getElementById('cameraStream');
         const cameraStatus = document.getElementById('cameraStatus');
-        cam.onload = function() {
-            cameraStatus.textContent = 'Camera connected';
-            cameraStatus.style.color = '#d4d4d8';
-        };
-        cam.onerror = function() {
-            cameraStatus.textContent = 'Camera stream unavailable';
-            cameraStatus.style.color = '#fca5a5';
-        };
-        const menuToggle = document.getElementById('menuToggle');
+        cam.onload  = () => { cameraStatus.textContent = 'Camera connected';           cameraStatus.style.color = '#d4d4d8'; };
+        cam.onerror = () => { cameraStatus.textContent = 'Camera stream unavailable';  cameraStatus.style.color = '#fca5a5'; };
+ 
+        const menuToggle   = document.getElementById('menuToggle');
         const menuDropdown = document.getElementById('menuDropdown');
-        menuToggle.addEventListener('click', function(e) {
-            e.stopPropagation();
-            menuDropdown.classList.toggle('show');
-        });
-        document.addEventListener('click', function(e) {
+        menuToggle.addEventListener('click', e => { e.stopPropagation(); menuDropdown.classList.toggle('show'); });
+        document.addEventListener('click', e => {
             if (!menuDropdown.contains(e.target) && !menuToggle.contains(e.target)) {
                 menuDropdown.classList.remove('show');
             }
         });
+ 
+        // ── Boot ───────────────────────────────────────────────────────
         setStatusWaiting();
         fetchData();
-        setInterval(fetchData, 500);
-        setInterval(watchDataTimeout, 250);
+        setInterval(fetchData,          500);
+        setInterval(watchDataTimeout,   250);
     </script>
 </body>
 </html>
