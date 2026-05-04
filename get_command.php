@@ -1,4 +1,5 @@
 <?php
-$cmd = @file_get_contents('/tmp/command.txt');
+$file = __DIR__ . '/command.txt';
+$cmd = @file_get_contents($file);
 echo $cmd ? trim($cmd) : '';
 ?>

@@ -1,8 +1,11 @@
 <?php
-$command = $_POST['command'] ?? '';
-$allowed = ['LIGHT_ON', 'LIGHT_OFF', ''];
-if (in_array($command, $allowed)) {
-    file_put_contents('/tmp/command.txt', $command);
+$file = __DIR__ . '/command.txt';
+$light = $_GET['light'] ?? '';
+
+if ($light === 'ON') {
+    file_put_contents($file, 'LIGHT_ON');
+} elseif ($light === 'OFF') {
+    file_put_contents($file, 'LIGHT_OFF');
 }
 echo "OK";
 ?>
