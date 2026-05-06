@@ -1,5 +1,5 @@
 <?php 
-$cameraStreamUrl = "http://192.168.137.8:81/stream";
+$cameraStreamUrl = "http://172.20.10.2:81/stream";
 ?>
 <!DOCTYPE html>
 <html lang="en">
